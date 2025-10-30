@@ -25,7 +25,29 @@
     <a class="card-link-wrapper" href="{{ url('api/user/1') }}">
         <section class="card-info">
             <h1 class="card-title">GET - Detalle de un usuario</h1>
-            <p class="card-url">http://127.0.0.1:8000/api/user/1</p>
+            <p class="card-url">http://127.0.0.1:8000/api/user/{id}</p>
+        </section>
+        <section class="card-action">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </section>
+    </a>
+    <a class="card-link-wrapper" href="#">
+        <section class="card-info">
+            <h1 class="card-title">PUT - Actualizar usuario</h1>
+            <p class="card-url">http://127.0.0.1:8000/api/user/{id}</p>
+        </section>
+        <section class="card-action">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </section>
+    </a>
+    <a class="card-link-wrapper" href="#">
+        <section class="card-info">
+            <h1 class="card-title">DELETE - Eliminar usuario</h1>
+            <p class="card-url">http://127.0.0.1:8000/api/user/{id}</p>
         </section>
         <section class="card-action">
             <div class="dot"></div>
