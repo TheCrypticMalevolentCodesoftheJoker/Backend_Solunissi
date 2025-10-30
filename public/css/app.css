@@ -1,5 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Frijole&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bungee+Shade&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
 * {
     margin: 0;
@@ -9,15 +8,14 @@
 }
 
 body {
-    background-color: #11404D;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
 }
 
 .app-header {
-    z-index: 0;
-    background-color: #1b1e2a;
+    z-index: 1;
+    background-color: rgb(30 30 30);
     width: calc(100% - 0%);
     height: calc(100vh - 90vh);
     display: flex;
@@ -26,15 +24,14 @@ body {
 }
 
 .app-header>.nav-link {
-    color: #f7f7f7;
-    font-family: "Frijole", system-ui;
+    color: rgb(0, 255, 255);
+    font-family: "Bungee Shade", sans-serif;
     text-decoration: none;
-    font-size: 20px;
+    font-size: 30px;
     letter-spacing: 1px;
 }
 
 .content-wrapper {
-    z-index: 1;
     width: calc(100% - 0%);
     height: calc(90vh - 0vh);
     display: flex;
@@ -42,60 +39,75 @@ body {
 }
 
 .content-wrapper>.sub-menu {
-    z-index: 3;
-    background: rgb(64, 69, 89);
-    box-shadow: 10px 8px 10px rgb(44 47 59);
+    z-index: 1;
+    background-color: rgb(65 65 65);
+    box-shadow: 10px 8px 10px rgb(30 30 30);
     width: calc(20%);
     height: calc(90vh);
     display: flex;
     flex-direction: column;
-    padding: 15px;
-    gap: 15px;
+    padding: 20px 30px 20px 20px;
+    gap: 20px;
 }
 
 .content-wrapper>.sub-menu>.sub-menu-link {
-    font-family: "Montserrat", sans-serif;
-    color: white;
-    font-size: 15px;
-    text-decoration: none;
-    background-color: #1b1e2a;
-    padding: 10px;
+    background: rgb(65 65 65);
+    width: calc(100% - 0%);
+    box-shadow: inset 6px 6px 12px #4b4b4b, inset -6px -6px 12px 0px #272727, 8px 8px 12px #000000, -6px -6px 20px #333333;
     border-radius: 10px;
-    cursor: pointer;
+    border-top: 1px solid #4b4b4b;
+    border-left: 1px solid #4b4b4b;
+    border-bottom: 1px solid #272727;
+    border-right: 1px solid #272727;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-decoration: none;
+    font-family: "Montserrat", sans-serif;
+    color: #ffffff;
+    font-size: 15px;
+    text-transform: uppercase;
+    font-weight: bold;
 }
 
 .content-wrapper>.app-main {
-    z-index: 2;
-    background-color: #f0f0f0;
+    z-index: 0;
+    background-color: rgb(65 65 65);
     width: calc(80% - 0%);
     height: calc(90vh - 0vh);
-    padding: 10px 15px;
+    padding: 10px 30px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 20px;
 }
 
 /*  Diseño para Dashboard*/
 .content-wrapper>.app-main>.dashboard-title {
     text-align: center;
-    font-family: "Frijole", system-ui;
+    color: rgb(205 205 205);
+    font-family: "Bungee Shade", sans-serif;
     font-size: 30px;
     letter-spacing: 1px;
 }
 
 /*  Diseño para card*/
 .content-wrapper>.app-main>.card-link-wrapper {
-    background: #e8e8e8;
-    box-shadow: 6px 6px 12px #bfbebe, -6px -6px 12px #ffffff;
-    border: 1px solid #e8e8e8;
-    border-radius: 10px;
+    background: rgb(65 65 65);
     width: calc(100% - 0%);
-    padding: 10px;
+    box-shadow: inset 6px 6px 12px #4b4b4b, inset -6px -6px 12px 0px #272727, 8px 8px 12px #000000, -6px -6px 20px #333333;
+    border-radius: 10px;
+    border-top: 1px solid #4b4b4b;
+    border-left: 1px solid #4b4b4b;
+    border-bottom: 1px solid #272727;
+    border-right: 1px solid #272727;
+    padding: 20px 30px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     text-decoration: none;
+    cursor: pointer;
 }
 
 .content-wrapper>.app-main>.card-link-wrapper>.card-info {
@@ -103,14 +115,17 @@ body {
     flex-direction: column;
     gap: 10px;
 }
+
 .content-wrapper>.app-main>.card-link-wrapper>.card-info>.card-title {
-    color: #000000e6;
+    font-family: "Montserrat", sans-serif;
+    color: #ffffff;
     letter-spacing: 0.5px;
-    text-transform: uppercase;
     font-size: 20px;
 }
+
 .content-wrapper>.app-main>.card-link-wrapper>.card-info>.card-url {
-    color: #444444e6;
+    font-family: "Montserrat", sans-serif;
+    color: #d1d1d1;
     letter-spacing: 0.5px;
     font-size: 12px;
     font-style: oblique;
@@ -121,39 +136,41 @@ body {
     align-items: center;
     justify-content: center;
 }
+
 .dot {
     height: 15px;
     width: 15px;
     margin-right: 10px;
     border-radius: 10px;
-    background-color: #2e7d32;
+    background-color: #00ff0d;
+    box-shadow: 0 0 10px 0 rgba(0, 255, 13, 0.8);
     animation: pulse 1.5s infinite ease-in-out;
 }
 
 .dot:last-child {
-  margin-right: 0;
+    margin-right: 0;
 }
 
 .dot:nth-child(1) {
-  animation-delay: -0.3s;
+    animation-delay: -0.3s;
 }
 
 @keyframes pulse {
-  0% {
-    transform: scale(0.8);
-    background-color: #2e7d32; /* verde oscuro inicial */
-    box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.7);
-  }
+    0% {
+        transform: scale(0.9);
+        background-color: #00ff0d; /* verde base */
+        box-shadow: 0 0 10px 0 rgba(0, 255, 13, 0.8);
+    }
 
-  50% {
-    transform: scale(1.2);
-    background-color: #1b5e20; /* verde más intenso/dark */
-    box-shadow: 0 0 0 10px rgba(46, 125, 50, 0);
-  }
+    50% {
+        transform: scale(1.15);
+        background-color: #00cc0a;
+        box-shadow: 0 0 20px 2px rgba(0, 255, 13, 0.6);
+    }
 
-  100% {
-    transform: scale(0.8);
-    background-color: #2e7d32; /* vuelve al verde oscuro inicial */
-    box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.7);
-  }
+    100% {
+        transform: scale(0.9);
+        background-color: #00ff0d; /* vuelve al verde base */
+        box-shadow: 0 0 10px 0 rgba(0, 255, 13, 0.8);
+    }
 }

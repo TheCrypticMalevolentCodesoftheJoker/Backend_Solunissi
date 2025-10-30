@@ -42,7 +42,7 @@
             <div class="dot"></div>
         </section>
     </a>
-        <a class="card-link-wrapper" href="#">
+    <a class="card-link-wrapper" href="#">
         <section class="card-info">
             <h1 class="card-title">PUT - Actualizar usuario</h1>
             <p class="card-url">http://127.0.0.1:8000/api/user/{id}</p>
@@ -53,8 +53,7 @@
             <div class="dot"></div>
         </section>
     </a>
-     </a>
-        <a class="card-link-wrapper" href="#">
+    <a class="card-link-wrapper" href="#">
         <section class="card-info">
             <h1 class="card-title">DELETE - Eliminar usuario</h1>
             <p class="card-url">http://127.0.0.1:8000/api/user/{id}</p>
