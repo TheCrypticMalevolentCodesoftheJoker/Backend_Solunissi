@@ -15,7 +15,7 @@ class UserControllerTest extends TestCase
             'telefono' => '+51987654321',
             'email' => 'uriel@gmail.com',
             'contrasena' => 'Uriel.71',
-            'rolId' => 5
+            'rolID' => 5
         ];
 
         $response = $this->postJson('/api/user', $payload);
@@ -26,24 +26,35 @@ class UserControllerTest extends TestCase
     {
         $payload = [
             'nombre' => 'Uriel',
-            'apellidos' => 'turpo',
-            'telefono' => '',
-            'email' => 'Erison@gmail.com',
-            'contrasena' => 'Erinson.71',
+            'apellidos' => 'Mamani',
+            'telefono' => '+51987654321',
+            'email' => 'uriel@gmail.com',
+            'contrasena' => 'Uriel.71',
             'estado' => true,
-            'rolId' => 1
+            'rolID' => 1
         ];
 
-        $response = $this->putJson('/api/user/1', $payload);
+        $response = $this->putJson('/api/user/6', $payload);
         echo $response->getContent();
     }
 
     public function test_delete_user()
     {
-        $userId = 1;
-        $response = $this->deleteJson("/api/user/{$userId}");
+        $response = $this->deleteJson("/api/user/6");
+
+        echo $response->getContent();
+    }
+
+    public function test_login_user()
+    {
+        $loginData = [
+            'email' => 'uriel@gmail.com',
+            'contrasena' => 'Uriel.71'
+        ];
+
+        $response = $this->postJson('/api/auth/login', $loginData);
 
         echo $response->getContent();
     }
 }
-// php artisan test --filter=UserControllerTest::test_create_user
+// php artisan test --filter=UserControllerTest::test_login_user
