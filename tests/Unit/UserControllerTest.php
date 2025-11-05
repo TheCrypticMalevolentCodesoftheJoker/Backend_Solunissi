@@ -10,10 +10,10 @@ class UserControllerTest extends TestCase
     public function test_create_user()
     {
         $payload = [
-            'nombre' => 'Uriel',
-            'apellidos' => 'Turpo',
+            'nombre' => 'fredy',
+            'apellidos' => 'javier',
             'telefono' => '+51987654321',
-            'email' => 'uriel@gmail.com',
+            'email' => 'frey@gmail.com',
             'contrasena' => 'Uriel.71',
             'rolID' => 5
         ];
@@ -25,22 +25,22 @@ class UserControllerTest extends TestCase
     public function test_update_user()
     {
         $payload = [
-            'nombre' => 'Uriel',
+            'nombre' => 'erison',
             'apellidos' => 'Mamani',
             'telefono' => '+51987654321',
-            'email' => 'uriel@gmail.com',
+            'email' => 'erison@gmail.com',
             'contrasena' => 'Uriel.71',
             'estado' => true,
             'rolID' => 1
         ];
 
-        $response = $this->putJson('/api/user/6', $payload);
+        $response = $this->putJson('/api/user/7', $payload);
         echo $response->getContent();
     }
 
     public function test_delete_user()
     {
-        $response = $this->deleteJson("/api/user/6");
+        $response = $this->deleteJson("/api/user/7");
 
         echo $response->getContent();
     }
@@ -48,7 +48,7 @@ class UserControllerTest extends TestCase
     public function test_login_user()
     {
         $loginData = [
-            'email' => 'uriel@gmail.com',
+            'email' => 'erison@gmail.com',
             'contrasena' => 'Uriel.71'
         ];
 
