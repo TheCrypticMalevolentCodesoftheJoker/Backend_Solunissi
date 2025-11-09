@@ -31,11 +31,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property Collection|TblAlmacen[] $tbl_almacens
  * @property Collection|TblAsignacionRecurso[] $tbl_asignacion_recursos
  * @property Collection|TblAsistencium[] $tbl_asistencia
+ * @property Collection|TblAsistenciaDetalle[] $tbl_asistencia_detalles
  * @property Collection|TblAvanceProyecto[] $tbl_avance_proyectos
+ * @property Collection|TblBoletaPago[] $tbl_boleta_pagos
  * @property Collection|TblEquipoOperativoDetalle[] $tbl_equipo_operativo_detalles
  * @property Collection|TblIncidenciaInventario[] $tbl_incidencia_inventarios
  * @property Collection|TblIncidenciaProduccion[] $tbl_incidencia_produccions
- * @property Collection|TblNomina[] $tbl_nominas
  * @property Collection|TblProyecto[] $tbl_proyectos
  * @property Collection|TblSolicitudCompra[] $tbl_solicitud_compras
  * @property Collection|TblTareaProyecto[] $tbl_tarea_proyectos
@@ -86,9 +87,19 @@ class TblEmpleado extends Model
 		return $this->hasMany(TblAsistencium::class, 'supervisor_id');
 	}
 
+	public function tbl_asistencia_detalles()
+	{
+		return $this->hasMany(TblAsistenciaDetalle::class, 'empleado_id');
+	}
+
 	public function tbl_avance_proyectos()
 	{
 		return $this->hasMany(TblAvanceProyecto::class, 'registrado_por');
+	}
+
+	public function tbl_boleta_pagos()
+	{
+		return $this->hasMany(TblBoletaPago::class, 'empleado_id');
 	}
 
 	public function tbl_equipo_operativo_detalles()
@@ -104,11 +115,6 @@ class TblEmpleado extends Model
 	public function tbl_incidencia_produccions()
 	{
 		return $this->hasMany(TblIncidenciaProduccion::class, 'responsable_id');
-	}
-
-	public function tbl_nominas()
-	{
-		return $this->hasMany(TblNomina::class, 'empleado_id');
 	}
 
 	public function tbl_proyectos()

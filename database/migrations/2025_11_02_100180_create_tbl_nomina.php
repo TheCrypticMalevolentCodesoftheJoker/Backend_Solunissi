@@ -13,19 +13,13 @@ return new class extends Migration
     {
         Schema::create('tbl_nomina', function (Blueprint $table) {
             $table->id();
-            $table->string('periodo', 50);
-            $table->unsignedBigInteger('empleado_id');
-            $table->decimal('sueldo_base', 12, 2)->default(0);
-            $table->decimal('horas_extra', 12, 2)->default(0);
-            $table->decimal('bonificacion', 12, 2)->default(0);
-            $table->decimal('descuentos', 12, 2)->default(0);
-            $table->decimal('total_pagar', 12, 2)->default(0);
+            $table->string('codigo', 20)->unique()->nullable();
+            $table->string('periodo', 20);
+            $table->date('fecha_inicio');
+            $table->date('fecha_fin');
             $table->date('fecha_pago');
-            $table->unsignedBigInteger('transaccion_id');
-            $table->timestamps();
-
-            $table->foreign('empleado_id')->references('id')->on('tbl_empleado')->onDelete('cascade');
-            $table->foreign('transaccion_id')->references('id')->on('tbl_transaccion_contable')->onDelete('cascade');
+            $table->decimal('total_nomina', 10, 2)->default(0);
+            $table->string('estado', 50)->default('Borrador');
         });
     }
 

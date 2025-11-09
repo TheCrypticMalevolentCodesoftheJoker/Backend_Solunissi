@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property int $centro_costo_id
  * @property float $monto_total
  * @property string|null $modulo_origen
- * @property int|null $referencia_id
+ * @property string|null $referencia_id
  * @property string|null $descripcion
  * @property string $estado
  * @property Carbon|null $created_at
@@ -34,7 +34,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property Collection|TblDocumentoContable[] $tbl_documento_contables
  * @property Collection|TblFactura[] $tbl_facturas
  * @property Collection|TblMantenimientoVehiculo[] $tbl_mantenimiento_vehiculos
- * @property Collection|TblNomina[] $tbl_nominas
  * @property Collection|TblOrdenCompra[] $tbl_orden_compras
  * @property Collection|TblPago[] $tbl_pagos
  *
@@ -50,8 +49,7 @@ class TblTransaccionContable extends Model
 		'proyecto_id' => 'int',
 		'tipo_transaccion_contable_id' => 'int',
 		'centro_costo_id' => 'int',
-		'monto_total' => 'float',
-		'referencia_id' => 'int'
+		'monto_total' => 'float'
 	];
 
 	protected $fillable = [
@@ -99,11 +97,6 @@ class TblTransaccionContable extends Model
 	public function tbl_mantenimiento_vehiculos()
 	{
 		return $this->hasMany(TblMantenimientoVehiculo::class, 'transaccion_id');
-	}
-
-	public function tbl_nominas()
-	{
-		return $this->hasMany(TblNomina::class, 'transaccion_id');
 	}
 
 	public function tbl_orden_compras()

@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property Carbon|null $updated_at
  * 
  * @property TblProyecto|null $tbl_proyecto
+ * @property Collection|TblAsistencium[] $tbl_asistencia
  * @property Collection|TblEquipoOperativoDetalle[] $tbl_equipo_operativo_detalles
  *
  * @package App\Models
@@ -45,6 +46,11 @@ class TblEquipoOperativo extends Model
 	public function tbl_proyecto()
 	{
 		return $this->belongsTo(TblProyecto::class, 'proyecto_id');
+	}
+
+	public function tbl_asistencia()
+	{
+		return $this->hasMany(TblAsistencium::class, 'equipo_operativo_id');
 	}
 
 	public function tbl_equipo_operativo_detalles()

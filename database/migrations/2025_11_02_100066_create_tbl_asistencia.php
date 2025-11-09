@@ -13,20 +13,26 @@ return new class extends Migration
     {
         Schema::create('tbl_asistencia', function (Blueprint $table) {
             $table->id();
-
-            $table->unsignedBigInteger('empleado_id');
+            $table->unsignedBigInteger('equipo_operativo_id');
+            $table->unsignedBigInteger('proyecto_id');
             $table->unsignedBigInteger('supervisor_id');
-            $table->unsignedBigInteger('proyecto_id')->nullable();
-
             $table->date('fecha');
-            $table->decimal('horas_extra', 5, 2)->nullable();
-            $table->string('estado', 50);
-            $table->text('observacion')->nullable();
-            $table->timestamps();
 
-            $table->foreign('empleado_id')->references('id')->on('tbl_empleado')->onDelete('cascade');
+            $table->foreign('equipo_operativo_id')->references('id')->on('tbl_equipo_operativo')->onDelete('cascade');
+            $table->foreign('proyecto_id')->references('id')->on('tbl_proyecto')->onDelete('cascade');
             $table->foreign('supervisor_id')->references('id')->on('tbl_empleado')->onDelete('cascade');
-            $table->foreign('proyecto_id')->references('id')->on('tbl_proyecto')->onDelete('set null');
+        });
+
+        Schema::create('tbl_asistencia_detalle', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('asistencia_id');
+            $table->unsignedBigInteger('empleado_id');
+            $table->string('estado', 50);
+            $table->decimal('horas_extra', 5, 2)->nullable();
+            $table->text('observacion')->nullable();
+
+            $table->foreign('asistencia_id')->references('id')->on('tbl_asistencia')->onDelete('cascade');
+            $table->foreign('empleado_id')->references('id')->on('tbl_empleado')->onDelete('cascade');
         });
     }
 
@@ -35,6 +41,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('tbl_asistencia_detalle');
         Schema::dropIfExists('tbl_asistencia');
     }
 };

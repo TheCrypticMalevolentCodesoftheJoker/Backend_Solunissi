@@ -7,6 +7,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -14,18 +15,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * Class TblAsistencium
  * 
  * @property int $id
- * @property int $empleado_id
+ * @property int $equipo_operativo_id
+ * @property int $proyecto_id
  * @property int $supervisor_id
- * @property int|null $proyecto_id
  * @property Carbon $fecha
- * @property float|null $horas_extra
- * @property string $estado
- * @property string|null $observacion
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
  * 
+ * @property TblEquipoOperativo $tbl_equipo_operativo
+ * @property TblProyecto $tbl_proyecto
  * @property TblEmpleado $tbl_empleado
- * @property TblProyecto|null $tbl_proyecto
+ * @property Collection|TblAsistenciaDetalle[] $tbl_asistencia_detalles
  *
  * @package App\Models
  */
@@ -33,32 +31,39 @@ class TblAsistencium extends Model
 {
     use HasFactory;
 	protected $table = 'tbl_asistencia';
+	public $timestamps = false;
 
 	protected $casts = [
-		'empleado_id' => 'int',
-		'supervisor_id' => 'int',
+		'equipo_operativo_id' => 'int',
 		'proyecto_id' => 'int',
-		'fecha' => 'datetime',
-		'horas_extra' => 'float'
+		'supervisor_id' => 'int',
+		'fecha' => 'datetime'
 	];
 
 	protected $fillable = [
-		'empleado_id',
-		'supervisor_id',
+		'equipo_operativo_id',
 		'proyecto_id',
-		'fecha',
-		'horas_extra',
-		'estado',
-		'observacion'
+		'supervisor_id',
+		'fecha'
 	];
+
+	public function tbl_equipo_operativo()
+	{
+		return $this->belongsTo(TblEquipoOperativo::class, 'equipo_operativo_id');
+	}
+
+	public function tbl_proyecto()
+	{
+		return $this->belongsTo(TblProyecto::class, 'proyecto_id');
+	}
 
 	public function tbl_empleado()
 	{
 		return $this->belongsTo(TblEmpleado::class, 'supervisor_id');
 	}
 
-	public function tbl_proyecto()
+	public function tbl_asistencia_detalles()
 	{
-		return $this->belongsTo(TblProyecto::class, 'proyecto_id');
+		return $this->hasMany(TblAsistenciaDetalle::class, 'asistencia_id');
 	}
 }

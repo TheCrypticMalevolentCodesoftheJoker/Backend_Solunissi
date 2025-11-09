@@ -20,6 +20,16 @@ return new class extends Migration
 
             $table->foreign('proyecto_id')->references('id')->on('tbl_proyecto')->onDelete('cascade');
         });
+
+        Schema::create('tbl_equipo_operativo_detalle', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('equipo_operativo_id');
+            $table->unsignedBigInteger('empleado_id');
+            $table->timestamps();
+
+            $table->foreign('equipo_operativo_id')->references('id')->on('tbl_equipo_operativo')->onDelete('cascade');
+            $table->foreign('empleado_id')->references('id')->on('tbl_empleado')->onDelete('cascade');
+        });
     }
 
     /**
@@ -27,6 +37,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('tbl_equipo_operativo_detalle');
         Schema::dropIfExists('tbl_cuadrilla');
     }
 };

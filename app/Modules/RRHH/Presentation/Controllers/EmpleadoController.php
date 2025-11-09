@@ -2,10 +2,13 @@
 
 namespace Modules\RRHH\Presentation\Controllers;
 
+use App\Models\TblAsistenciaDetalle;
+use App\Models\TblAsistencium;
 use Illuminate\Http\Request;
 use App\Models\TblEmpleado;
 use App\Models\TblEquipoOperativo;
 use App\Models\TblEquipoOperativoDetalle;
+use App\Models\TblNomina;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Routing\Controller;
 use Modules\Shared\Application\DTOs\MessageDTO;
@@ -110,5 +113,66 @@ class EmpleadoController extends Controller
         }
     }
 
-    
+    public function registrarAsistencia(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+            $asistencia = TblAsistencium::create([
+                'equipo_operativo_id' => $request->input('equipo_operativo_id'),
+                'proyecto_id' => $request->input('proyecto_id'),
+                'supervisor_id' => $request->input('supervisor_id'),
+                'fecha' => $request->input('fecha', now()->toDateString()),
+            ]);
+
+            $detalles = $request->input('detalles', []);
+
+            foreach ($detalles as $detalle) {
+                TblAsistenciaDetalle::create([
+                    'asistencia_id' => $asistencia->id,
+                    'empleado_id' => $detalle['empleado_id'],
+                    'estado' => $detalle['estado'],
+                    'horas_extra' => $detalle['horas_extra'] ?? 0,
+                    'observacion' => $detalle['observacion'] ?? null,
+                ]);
+            }
+
+            DB::commit();
+
+            $dto = new MessageDTO(true, "Asistencia registrada correctamente", 201, $asistencia);
+            return new ApiResponseResource($dto);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            $code = $e->getCode() ?: 500;
+            $mensaje = $e->getMessage() ?: "Error al registrar asistencia";
+
+            $dto = new MessageDTO(false, $mensaje, $code, null);
+            return new ApiResponseResource($dto);
+        }
+    }
+
+    public function consultarAsistencia()
+    {
+        try {
+            $asistencias = TblAsistencium::with([
+                'tbl_proyecto:id,nombre',
+                'tbl_equipo_operativo:id,nombre',
+                'tbl_asistencia_detalles.tbl_empleado:id,dni,nombres,apellidos'
+            ])
+                ->orderBy('fecha', 'desc')
+                ->get();
+
+            if ($asistencias->isEmpty()) {
+                $dto = new MessageDTO(false, "No se encontró ningún registro de asistencia", 404, []);
+                return new ApiResponseResource($dto);
+            }
+
+            $dto = new MessageDTO(true, "Asistencias consultadas correctamente", 200, $asistencias);
+            return new ApiResponseResource($dto);
+        } catch (\Exception $e) {
+            $dto = new MessageDTO(false, $e->getMessage(), $e->getCode() ?: 500, null);
+            return new ApiResponseResource($dto);
+        }
+    }
 }

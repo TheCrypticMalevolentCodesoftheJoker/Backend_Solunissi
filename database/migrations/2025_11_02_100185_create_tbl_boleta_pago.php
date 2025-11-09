@@ -13,13 +13,20 @@ return new class extends Migration
     {
         Schema::create('tbl_boleta_pago', function (Blueprint $table) {
             $table->id();
+            $table->string('codigo', 10)->unique()->nullable();
             $table->unsignedBigInteger('nomina_id');
-            $table->string('numero', 50)->unique();
-            $table->date('fecha_emision');
-            $table->string('archivo_pdf', 255)->nullable();
-            $table->timestamps();
+            $table->unsignedBigInteger('empleado_id');
+
+            $table->decimal('salario_base', 10, 2);
+            $table->decimal('horas_extra', 10, 2)->default(0);
+            $table->decimal('bonos', 10, 2)->default(0);
+            $table->decimal('descuentos', 10, 2)->default(0);
+            $table->decimal('neto_pagar', 10, 2);
+
+            $table->string('estado', 20)->default('Pendiente');
 
             $table->foreign('nomina_id')->references('id')->on('tbl_nomina')->onDelete('cascade');
+            $table->foreign('empleado_id')->references('id')->on('tbl_empleado')->onDelete('cascade');
         });
     }
 

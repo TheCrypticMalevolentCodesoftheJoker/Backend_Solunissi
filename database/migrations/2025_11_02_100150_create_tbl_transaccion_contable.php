@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('centro_costo_id');
             $table->decimal('monto_total', 12, 2)->default(0);
             $table->string('modulo_origen', 100)->nullable();
-            $table->unsignedBigInteger('referencia_id')->nullable();
+            $table->string('referencia_id', 20)->nullable();
             $table->text('descripcion')->nullable();
             $table->string('estado', 50)->default('Pendiente');
             $table->timestamps();

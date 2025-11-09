@@ -113,7 +113,7 @@ Artisan::command('uriel', function () {
     $this->line("💡 Inspiración: $mensajeAleatorio");
 })->purpose('Muestra un mensaje inspirador aleatorio para programadores');
 
-Artisan::command('rutas', function () {
+Artisan::command('router', function () {
     $this->info("\n📌 Listado de rutas cargadas:\n");
     $this->call('route:list');
 })->describe('Muestra un listado de todas las rutas registradas en la aplicación');
