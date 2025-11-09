@@ -1,35 +1,62 @@
 <?php
 
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Artisan;
 
-Artisan::command('ReiniciarBD', function () {
-    $this->info('✨ Iniciando proceso completo de reinicio de base de datos y modelos...');
+Artisan::command('borrarData', function () {
+    $this->info('✨ Eliminando modelos antiguos en app/Models...');
+    $modelsPath = app_path('Models');
+    if (File::exists($modelsPath)) {
+        $files = File::files($modelsPath);
+        foreach ($files as $file) {
+            File::delete($file);
+        }
+    }
 
-    $this->info('🧩 Paso 1: Eliminando tablas y aplicando migraciones desde cero...');
-    Artisan::call('migrate:refresh');
+    $this->info('✨ Aplicando migraciones desde cero...');
+    Artisan::call('migrate:fresh');
 
-    $this->info('⚙️ Paso 2: Regenerando los modelos con Reliese...');
+    $this->info('✨ Generando modelos con Reliese...');
     Artisan::call('code:models');
 
-    $this->info('⚠️ Nota: Si vas a usar factories, recuerda agregar "use HasFactory;" en cada modelo.');
+    $this->info('✨ Agregando "use HasFactory;" a cada modelo...');
+    $modelFiles = File::files($modelsPath);
+    foreach ($modelFiles as $file) {
+        $contents = File::get($file);
 
-    $this->info('✅ Proceso completado correctamente. Estructura de base de datos y modelos actualizados.');
-})->purpose('Reinicia la base de datos, aplica migraciones y regenera los modelos.');
+        if (!str_contains($contents, 'HasFactory')) {
+            $contents = str_replace(
+                'use Illuminate\Database\Eloquent\Model;',
+                "use Illuminate\Database\Eloquent\Model;\nuse Illuminate\Database\Eloquent\Factories\HasFactory;",
+                $contents
+            );
+
+            $contents = preg_replace_callback(
+                '/class (\w+) extends Model\s*\{/',
+                function ($matches) {
+                    return $matches[0] . "\n    use HasFactory;";
+                },
+                $contents,
+                1
+            );
+
+            File::put($file, $contents);
+        }
+    }
+
+
+    $this->info('✅ Proceso finalizado exitosamente.');
+})->purpose('Reinicia la base de datos, aplica migraciones, regenera modelos y agrega HasFactory.');
 
 Artisan::command('cargarData', function () {
-    $this->info('🌱 Cargando datos de prueba...');
+    $this->info('✨ Cargando datos de prueba...');
     Artisan::call('db:seed');
-    $this->info('✅ Datos cargados correctamente.');
+    
+    $this->info('✅ Datos cargados exitosamente.');
 })->purpose('Ejecuta los seeders sin modificar la estructura.');
 
-Artisan::command('borrarData', function () {
-    $this->info('🧹 Reiniciando base de datos...');
-    Artisan::call('migrate:fresh');
-    $this->info('✅ Base de datos reiniciada y datos recargados.');
-})->purpose('Recrea la base de datos y ejecuta los seeders.');
-
 Artisan::command('codes', function () {
-    $this->info('📘 Códigos HTTP para API');
+    $this->info('✨ Códigos HTTP para API');
 
     $codes = [
         '2xx – Éxitos' => [
@@ -64,3 +91,29 @@ Artisan::command('codes', function () {
         }
     }
 })->purpose('Muestra todos los códigos HTTP más comunes y su significado.');
+
+Artisan::command('uriel', function () {
+    $this->info('✨ Inspiración para ti');
+
+    $mensajes = [
+        '“Programar es como contarle un secreto a una computadora y esperar que lo entienda.”',
+        '“Debugging: El arte de eliminar errores que ni sabías que existían.”',
+        '“Todo código que no rompe nada, probablemente no hace nada.”',
+        '“Commit temprano, commit frecuente, commit feliz.”',
+        '“Si funciona, no lo toques. Si no funciona, bueno… toca todo.”',
+        '“Programar es la forma más divertida de hacer malabares con la lógica.”',
+        '“Los programadores no se equivocan, solo crean características inesperadas.”',
+        '“La documentación es como el aceite: nadie la ve hasta que algo se traba.”',
+        '“Escribir código limpio es un arte, tu yo del futuro te lo agradecerá.”',
+        '“Siempre hay un bug escondido… y siempre hay café cerca.”',
+    ];
+
+    $mensajeAleatorio = $mensajes[array_rand($mensajes)];
+
+    $this->line("💡 Inspiración: $mensajeAleatorio");
+})->purpose('Muestra un mensaje inspirador aleatorio para programadores');
+
+Artisan::command('rutas', function () {
+    $this->info("\n📌 Listado de rutas cargadas:\n");
+    $this->call('route:list');
+})->describe('Muestra un listado de todas las rutas registradas en la aplicación');

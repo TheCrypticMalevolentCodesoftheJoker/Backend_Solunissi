@@ -11,8 +11,9 @@ php artisan list
 # ------------------------------------------------------------------------------------
 # Comandos del sistema
 # ------------------------------------------------------------------------------------
-php artisan sistema:limpiarFramework
-php artisan sistema:LimpiarCache
+php artisan borrarFramework
+php artisan borrarCache
+composer dump-autoload
 
 php artisan sistema:EscanearArquitectura
 php artisan sistema:EscanearArquitectura app

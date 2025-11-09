@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     // Registra los Service Providers adicionales (servicios propios o de terceros).
     ->withProviders([
         Modules\Autenticacion\Infrastructure\Providers\AutenticacionServiceProvider::class,
+        Modules\Shared\Infrastructure\Providers\ModulesLoaderServiceProvider::class,
     ])
 
     // Define middleware globales que procesan cada request.

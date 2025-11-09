@@ -7,8 +7,9 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class TblUsuario
@@ -27,12 +28,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $updated_at
  * 
  * @property TblRol $tbl_rol
+ * @property Collection|TblLead[] $tbl_leads
  *
  * @package App\Models
  */
 class TblUsuario extends Model
 {
-	use HasFactory;
+    use HasFactory;
 	protected $table = 'tbl_usuario';
 	protected $primaryKey = 'UsuarioID';
 
@@ -61,5 +63,10 @@ class TblUsuario extends Model
 	public function tbl_rol()
 	{
 		return $this->belongsTo(TblRol::class, 'RolID');
+	}
+
+	public function tbl_leads()
+	{
+		return $this->hasMany(TblLead::class, 'asignado_usuario_id');
 	}
 }

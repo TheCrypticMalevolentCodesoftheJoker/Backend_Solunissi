@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\File;
 
 class LimpiarFramework extends Command
 {
-    protected $signature = 'sistema:limpiarFramework';
+    protected $signature = 'borrarFramework';
     protected $description = 'Limpia archivos temporales de framework';
 
     public function handle()

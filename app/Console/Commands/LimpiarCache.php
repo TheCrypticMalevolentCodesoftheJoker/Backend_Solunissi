@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 
 class LimpiarCache extends Command
 {
-    protected $signature = 'sistema:LimpiarCache';
+    protected $signature = 'borrarCache';
     protected $description = '⚡ Limpia todas las caches y optimiza el sistema (bootstrap/cache)';
 
     public function handle()
@@ -33,7 +33,7 @@ class LimpiarCache extends Command
 
         $this->info('👻 Regenerando discovery de paquetes(packages & services)...');
         $this->call('package:discover');
-
+        
         $this->info('✅ Sistema optimizado correctamente.');
     }
 }

@@ -8,23 +8,25 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // -------------------------------------------------------------------
-        // Tablas principales: Tablas independientes que no dependen de otras
-        // -------------------------------------------------------------------
         $this->call([
-            TblRolSeeder::class,
+            //Contabilidad
+            TblCentroCostoSeeder::class,
+            TblTipoTransaccionContableSeeder::class,
+            TblCuentaContableSeeder::class,
+
+            //RRHH
+            TblCargoSeeder::class,
+
+
+            //Proyecto
+            TblProyectoSeeder::class,
         ]);
 
-        // -------------------------------------------------------------------
-        // Tablas secundarias: Dependen de las tablas principales
-        // -------------------------------------------------------------------
         $this->call([
-            TblUsuarioSeeder::class,
+            //RRHH
+            TblEmpleadoSeeder::class,
         ]);
 
-        // -------------------------------------------------------------------
-        // Tablas terciarias o adicionales: Dependen de tablas secundarias o múltiples tablas
-        // -------------------------------------------------------------------
         $this->call([]);
     }
 }
