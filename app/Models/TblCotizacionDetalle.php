@@ -6,12 +6,11 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
- * Class TblDetalleCotizacion
+ * Class TblCotizacionDetalle
  * 
  * @property int $id
  * @property int $cotizacion_id
@@ -19,18 +18,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property float $cantidad
  * @property float $precio_unitario
  * @property float $subtotal
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
  * 
  * @property TblCotizacion $tbl_cotizacion
  * @property TblMaterial $tbl_material
  *
  * @package App\Models
  */
-class TblDetalleCotizacion extends Model
+class TblCotizacionDetalle extends Model
 {
     use HasFactory;
-	protected $table = 'tbl_detalle_cotizacion';
+	protected $table = 'tbl_cotizacion_detalle';
+	public $timestamps = false;
 
 	protected $casts = [
 		'cotizacion_id' => 'int',

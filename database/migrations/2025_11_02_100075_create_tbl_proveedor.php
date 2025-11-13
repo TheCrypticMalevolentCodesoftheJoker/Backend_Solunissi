@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('telefono', 15)->nullable();
             $table->string('correo', 100)->unique();
             $table->boolean('estado')->default(true);
-            $table->timestamps();
         });
     }
 

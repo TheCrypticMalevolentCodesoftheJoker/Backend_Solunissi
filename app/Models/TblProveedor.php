@@ -6,7 +6,6 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -21,8 +20,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property string|null $telefono
  * @property string $correo
  * @property bool $estado
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
  * 
  * @property Collection|TblCotizacion[] $tbl_cotizacions
  *
@@ -32,6 +29,7 @@ class TblProveedor extends Model
 {
     use HasFactory;
 	protected $table = 'tbl_proveedor';
+	public $timestamps = false;
 
 	protected $casts = [
 		'estado' => 'bool'

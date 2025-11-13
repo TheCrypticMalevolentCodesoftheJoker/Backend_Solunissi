@@ -13,15 +13,9 @@ return new class extends Migration
     {
         Schema::create('tbl_material', function (Blueprint $table) {
             $table->id();
-            $table->string('codigo', 50)->unique();
+            $table->string('codigo', 10)->unique()->nullable();
             $table->string('nombre', 150);
-            $table->text('descripcion')->nullable();
             $table->string('unidad_medida', 50);
-            $table->integer('stock_minimo')->default(0);
-            $table->integer('stock_maximo')->nullable();
-            $table->decimal('precio_unitario', 10, 2);
-            $table->boolean('estado')->default(true);
-            $table->timestamps();
         });
     }
 

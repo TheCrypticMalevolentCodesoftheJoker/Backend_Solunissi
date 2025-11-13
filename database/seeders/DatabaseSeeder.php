@@ -9,21 +9,26 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            //Contabilidad
+            // Contabilidad
             TblCentroCostoSeeder::class,
             TblTipoTransaccionContableSeeder::class,
             TblCuentaContableSeeder::class,
 
-            //RRHH
+            // RRHH
             TblCargoSeeder::class,
 
+            // Compras
+            TblProveedorSeeder::class,
 
-            //Proyecto
+            // .............
+            TblMaterialSeeder::class,
+            
+            // Proyecto
             TblProyectoSeeder::class,
         ]);
 
         $this->call([
-            //RRHH
+            // RRHH
             TblEmpleadoSeeder::class,
         ]);
 

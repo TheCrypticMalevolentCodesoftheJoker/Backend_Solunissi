@@ -124,7 +124,7 @@ class TblEmpleado extends Model
 
 	public function tbl_solicitud_compras()
 	{
-		return $this->hasMany(TblSolicitudCompra::class, 'solicitante_id');
+		return $this->hasMany(TblSolicitudCompra::class, 'supervisor_id');
 	}
 
 	public function tbl_tarea_proyectos()

@@ -13,15 +13,12 @@ return new class extends Migration
     {
         Schema::create('tbl_orden_compra', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('cotizacion_id');
-            $table->string('numero', 50)->unique();
+            $table->string('codigo', 10)->unique()->nullable();
+            $table->foreignId('proyecto_id')->constrained('tbl_proyecto')->onDelete('cascade');
+            $table->foreignId('cotizacion_id')->constrained('tbl_cotizacion')->cascadeOnDelete();
+            $table->decimal('total_orden_compra', 12, 2)->default(0);
             $table->date('fecha_emision');
             $table->string('estado', 50)->default('Pendiente');
-            $table->unsignedBigInteger('transaccion_id');
-            $table->timestamps();
-
-            $table->foreign('cotizacion_id')->references('id')->on('tbl_cotizacion')->onDelete('cascade');
-            $table->foreign('transaccion_id')->references('id')->on('tbl_transaccion_contable')->onDelete('cascade');
         });
     }
 
@@ -30,6 +27,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('tbl_orden_compra_detalle');
         Schema::dropIfExists('tbl_orden_compra');
     }
 };

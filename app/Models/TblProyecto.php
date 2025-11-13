@@ -37,6 +37,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property Collection|TblIncidenciaCliente[] $tbl_incidencia_clientes
  * @property Collection|TblIncidenciaProduccion[] $tbl_incidencia_produccions
  * @property Collection|TblMovimientoInventario[] $tbl_movimiento_inventarios
+ * @property Collection|TblOrdenCompra[] $tbl_orden_compras
  * @property Collection|TblPresupuestoProyecto[] $tbl_presupuesto_proyectos
  * @property Collection|TblSolicitudCompra[] $tbl_solicitud_compras
  * @property Collection|TblStockAlmacen[] $tbl_stock_almacens
@@ -123,6 +124,11 @@ class TblProyecto extends Model
 	public function tbl_movimiento_inventarios()
 	{
 		return $this->hasMany(TblMovimientoInventario::class, 'proyecto_id');
+	}
+
+	public function tbl_orden_compras()
+	{
+		return $this->hasMany(TblOrdenCompra::class, 'proyecto_id');
 	}
 
 	public function tbl_presupuesto_proyectos()

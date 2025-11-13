@@ -34,7 +34,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property Collection|TblDocumentoContable[] $tbl_documento_contables
  * @property Collection|TblFactura[] $tbl_facturas
  * @property Collection|TblMantenimientoVehiculo[] $tbl_mantenimiento_vehiculos
- * @property Collection|TblOrdenCompra[] $tbl_orden_compras
  * @property Collection|TblPago[] $tbl_pagos
  *
  * @package App\Models
@@ -97,11 +96,6 @@ class TblTransaccionContable extends Model
 	public function tbl_mantenimiento_vehiculos()
 	{
 		return $this->hasMany(TblMantenimientoVehiculo::class, 'transaccion_id');
-	}
-
-	public function tbl_orden_compras()
-	{
-		return $this->hasMany(TblOrdenCompra::class, 'transaccion_id');
 	}
 
 	public function tbl_pagos()

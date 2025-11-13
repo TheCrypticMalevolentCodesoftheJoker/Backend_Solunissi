@@ -116,17 +116,19 @@
             <div class="dot"></div>
         </section>
     </a>
-    <a class="card-link-wrapper" href="<?php echo e(route('api/rrhh/nomina/1/reporte)); ?>" target="_blank">
-    <section class="card-info">
-        <h1 class="card-title">GET - Reporte PDF</h1>
-        <p class="card-url"><?php echo e(route('api/rrhh/nomina/1/reporte)); ?></p>
-    </section>
-    <section class="card-action">
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-    </section>
-</a>
+
+    <a class="card-link-wrapper" href="<?php echo e(url('api/rrhh/nomina/1/reporte')); ?>" target="_blank">
+        <section class="card-info">
+            <h1 class="card-title">GET - Reporte PDF</h1>
+            <p class="card-url"><?php echo e(url('api/rrhh/nomina/1/reporte')); ?></p>
+        </section>
+        <section class="card-action">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </section>
+    </a>
+
 
 
     <p class="dashboard-title">Endpoints - API RESTful de Boleta de Pago</p>

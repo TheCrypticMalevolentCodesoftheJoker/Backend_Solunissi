@@ -7,7 +7,6 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -15,17 +14,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * Class TblOrdenCompra
  * 
  * @property int $id
+ * @property string|null $codigo
+ * @property int $proyecto_id
  * @property int $cotizacion_id
- * @property string $numero
+ * @property float $total_orden_compra
  * @property Carbon $fecha_emision
  * @property string $estado
- * @property int $transaccion_id
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
  * 
  * @property TblCotizacion $tbl_cotizacion
- * @property TblTransaccionContable $tbl_transaccion_contable
- * @property Collection|TblDetalleOrdenCompra[] $tbl_detalle_orden_compras
+ * @property TblProyecto $tbl_proyecto
  *
  * @package App\Models
  */
@@ -33,19 +30,22 @@ class TblOrdenCompra extends Model
 {
     use HasFactory;
 	protected $table = 'tbl_orden_compra';
+	public $timestamps = false;
 
 	protected $casts = [
+		'proyecto_id' => 'int',
 		'cotizacion_id' => 'int',
-		'fecha_emision' => 'datetime',
-		'transaccion_id' => 'int'
+		'total_orden_compra' => 'float',
+		'fecha_emision' => 'datetime'
 	];
 
 	protected $fillable = [
+		'codigo',
+		'proyecto_id',
 		'cotizacion_id',
-		'numero',
+		'total_orden_compra',
 		'fecha_emision',
-		'estado',
-		'transaccion_id'
+		'estado'
 	];
 
 	public function tbl_cotizacion()
@@ -53,13 +53,8 @@ class TblOrdenCompra extends Model
 		return $this->belongsTo(TblCotizacion::class, 'cotizacion_id');
 	}
 
-	public function tbl_transaccion_contable()
+	public function tbl_proyecto()
 	{
-		return $this->belongsTo(TblTransaccionContable::class, 'transaccion_id');
-	}
-
-	public function tbl_detalle_orden_compras()
-	{
-		return $this->hasMany(TblDetalleOrdenCompra::class, 'orden_id');
+		return $this->belongsTo(TblProyecto::class, 'proyecto_id');
 	}
 }
