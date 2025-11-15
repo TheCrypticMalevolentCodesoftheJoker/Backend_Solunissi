@@ -11,17 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tbl_pago', function (Blueprint $table) {
+        Schema::create('tbl_contrato_pago', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('factura_id');
-            $table->date('fecha_pago');
+            $table->string('codigo', 10)->unique()->nullable();
+            $table->foreignId('contrato_id')->constrained('tbl_contrato')->onDelete('cascade');
             $table->decimal('monto', 12, 2);
-            $table->string('metodo_pago', 50);
-            $table->unsignedBigInteger('transaccion_id')->nullable();
+            $table->date('fecha_pago');
+            $table->string('medio_pago', 50)->default('Efectivo');
+            $table->string('estado', 50)->default('Registrado');
             $table->timestamps();
-
-            $table->foreign('factura_id')->references('id')->on('tbl_factura')->onDelete('cascade');
-            $table->foreign('transaccion_id')->references('id')->on('tbl_transaccion_contable')->onDelete('set null');
         });
     }
 
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tbl_pago');
+        Schema::dropIfExists('tbl_contrato_pago');
     }
 };

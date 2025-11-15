@@ -21,8 +21,7 @@ return new class extends Migration
             $table->string('modulo_origen', 100)->nullable();
             $table->string('referencia_id', 20)->nullable();
             $table->text('descripcion')->nullable();
-            $table->string('estado', 50)->default('Pendiente');
-            $table->timestamps();
+            $table->string('estado', 50);
 
             $table->foreign('proyecto_id')->references('id')->on('tbl_proyecto')->onDelete('set null');
             $table->foreign('tipo_transaccion_contable_id')->references('id')->on('tbl_tipo_transaccion_contable')->onDelete('cascade');

@@ -13,19 +13,16 @@ return new class extends Migration
     {
         Schema::create('tbl_proyecto', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('contrato_id')->nullable();
-            $table->string('nombre', 150);
+            $table->foreignId('contrato_id')->constrained('tbl_contrato')->onDelete('cascade');
+            $table->string('nombre', 20)->unique()->nullable();
             $table->text('descripcion')->nullable();
-            $table->date('fecha_inicio');
+            $table->foreignId('almacen_id')->nullable()->constrained('tbl_almacen')->onDelete('set null');
+            $table->foreignId('supervisor_id')->nullable()->constrained('tbl_empleado')->onDelete('set null');
+            $table->date('fecha_inicio')->nullable();
             $table->date('fecha_fin')->nullable();
-            $table->unsignedBigInteger('almacen_id')->nullable();
-            $table->unsignedBigInteger('supervisor_id')->nullable();
-            $table->string('estado', 50)->default('En progreso');
-            $table->timestamps();
-
-            $table->foreign('contrato_id')->references('id')->on('tbl_contrato')->onDelete('set null');
-            $table->foreign('almacen_id')->references('id')->on('tbl_almacen')->onDelete('set null');
-            $table->foreign('supervisor_id')->references('id')->on('tbl_empleado')->onDelete('set null');
+            $table->decimal('monto_asignado', 12, 2)->nullable();
+            $table->decimal('monto_ejecutado', 12, 2)->nullable();
+            $table->string('estado', 50)->nullable();
         });
     }
 

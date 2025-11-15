@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('tbl_contrato', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('cliente_id');
-            $table->string('numero', 50)->unique();
+            $table->string('codigo', 10)->unique()->nullable();
+            $table->foreignId('cliente_id')->constrained('tbl_cliente')->onDelete('cascade');
+            $table->string('tipo_servicio', 100);
+            $table->text('descripcion')->nullable();
             $table->date('fecha_firma');
+            $table->date('fecha_vencimiento')->nullable();
             $table->decimal('monto_total', 12, 2);
-            $table->string('estado', 50)->default('Activo');
-            $table->timestamps();
-
-            $table->foreign('cliente_id')->references('id')->on('tbl_cliente')->onDelete('cascade');
+            $table->string('estado', 50);
         });
     }
 

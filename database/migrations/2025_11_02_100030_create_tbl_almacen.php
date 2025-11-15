@@ -15,10 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nombre', 100);
             $table->string('ubicacion', 150)->nullable();
-            $table->unsignedBigInteger('responsable_id')->nullable();
             $table->boolean('estado')->default(true);
-            $table->timestamps();
-            $table->foreign('responsable_id')->references('id')->on('tbl_empleado')->onDelete('set null');
         });
     }
 

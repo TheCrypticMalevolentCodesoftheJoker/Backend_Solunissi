@@ -13,16 +13,12 @@ return new class extends Migration
     {
         Schema::create('tbl_factura', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('contrato_id');
-            $table->string('numero', 50)->unique();
-            $table->date('fecha_emision');
+            $table->string('codigo', 10)->unique()->nullable();
+            $table->foreignId('contrato_id')->constrained('tbl_contrato')->onDelete('cascade');
+            $table->foreignId('proyecto_id')->nullable()->constrained('tbl_proyecto')->onDelete('set null');
+            $table->date('fecha_emision')->default(now());
             $table->decimal('monto_total', 12, 2);
-            $table->string('estado', 50)->default('Emitida');
-            $table->unsignedBigInteger('transaccion_id')->nullable();
-            $table->timestamps();
-
-            $table->foreign('contrato_id')->references('id')->on('tbl_contrato')->onDelete('cascade');
-            $table->foreign('transaccion_id')->references('id')->on('tbl_transaccion_contable')->onDelete('set null');
+            $table->string('estado', 50);
         });
     }
 

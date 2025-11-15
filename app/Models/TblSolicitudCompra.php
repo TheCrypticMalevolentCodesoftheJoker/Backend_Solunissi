@@ -15,14 +15,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * Class TblSolicitudCompra
  * 
  * @property int $id
- * @property string|null $codigo
+ * @property int $solicitud_material_id
  * @property int $proyecto_id
- * @property int $supervisor_id
  * @property Carbon $fecha_solicitud
  * @property string $estado
  * 
  * @property TblProyecto $tbl_proyecto
- * @property TblEmpleado $tbl_empleado
+ * @property TblSolicitudMaterial $tbl_solicitud_material
  * @property Collection|TblCotizacion[] $tbl_cotizacions
  * @property Collection|TblSolicitudCompraDetalle[] $tbl_solicitud_compra_detalles
  *
@@ -35,15 +34,14 @@ class TblSolicitudCompra extends Model
 	public $timestamps = false;
 
 	protected $casts = [
+		'solicitud_material_id' => 'int',
 		'proyecto_id' => 'int',
-		'supervisor_id' => 'int',
 		'fecha_solicitud' => 'datetime'
 	];
 
 	protected $fillable = [
-		'codigo',
+		'solicitud_material_id',
 		'proyecto_id',
-		'supervisor_id',
 		'fecha_solicitud',
 		'estado'
 	];
@@ -53,9 +51,9 @@ class TblSolicitudCompra extends Model
 		return $this->belongsTo(TblProyecto::class, 'proyecto_id');
 	}
 
-	public function tbl_empleado()
+	public function tbl_solicitud_material()
 	{
-		return $this->belongsTo(TblEmpleado::class, 'supervisor_id');
+		return $this->belongsTo(TblSolicitudMaterial::class, 'solicitud_material_id');
 	}
 
 	public function tbl_cotizacions()

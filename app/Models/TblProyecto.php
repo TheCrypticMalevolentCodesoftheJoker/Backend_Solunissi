@@ -15,35 +15,34 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * Class TblProyecto
  * 
  * @property int $id
- * @property int|null $contrato_id
- * @property string $nombre
+ * @property int $contrato_id
+ * @property string|null $nombre
  * @property string|null $descripcion
- * @property Carbon $fecha_inicio
- * @property Carbon|null $fecha_fin
  * @property int|null $almacen_id
  * @property int|null $supervisor_id
- * @property string $estado
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property Carbon|null $fecha_inicio
+ * @property Carbon|null $fecha_fin
+ * @property float|null $monto_asignado
+ * @property float|null $monto_ejecutado
+ * @property string|null $estado
  * 
  * @property TblAlmacen|null $tbl_almacen
- * @property TblContrato|null $tbl_contrato
+ * @property TblContrato $tbl_contrato
  * @property TblEmpleado|null $tbl_empleado
- * @property Collection|TblAsignacionRecurso[] $tbl_asignacion_recursos
  * @property Collection|TblAsistencium[] $tbl_asistencia
- * @property Collection|TblAvanceProyecto[] $tbl_avance_proyectos
  * @property Collection|TblCotizacion[] $tbl_cotizacions
  * @property Collection|TblEquipoOperativo[] $tbl_equipo_operativos
- * @property Collection|TblIncidenciaCliente[] $tbl_incidencia_clientes
- * @property Collection|TblIncidenciaProduccion[] $tbl_incidencia_produccions
- * @property Collection|TblMovimientoInventario[] $tbl_movimiento_inventarios
+ * @property Collection|TblFactura[] $tbl_facturas
+ * @property Collection|TblInventarioMovimiento[] $tbl_inventario_movimientos
  * @property Collection|TblOrdenCompra[] $tbl_orden_compras
- * @property Collection|TblPresupuestoProyecto[] $tbl_presupuesto_proyectos
+ * @property Collection|TblProyectoAvance[] $tbl_proyecto_avances
+ * @property Collection|TblProyectoIncidencium[] $tbl_proyecto_incidencia
+ * @property Collection|TblProyectoMaterial[] $tbl_proyecto_materials
  * @property Collection|TblSolicitudCompra[] $tbl_solicitud_compras
- * @property Collection|TblStockAlmacen[] $tbl_stock_almacens
+ * @property Collection|TblSolicitudDespacho[] $tbl_solicitud_despachos
+ * @property Collection|TblSolicitudMaterial[] $tbl_solicitud_materials
  * @property Collection|TblTareaProyecto[] $tbl_tarea_proyectos
  * @property Collection|TblTransaccionContable[] $tbl_transaccion_contables
- * @property Collection|TblViaje[] $tbl_viajes
  *
  * @package App\Models
  */
@@ -51,23 +50,28 @@ class TblProyecto extends Model
 {
     use HasFactory;
 	protected $table = 'tbl_proyecto';
+	public $timestamps = false;
 
 	protected $casts = [
 		'contrato_id' => 'int',
+		'almacen_id' => 'int',
+		'supervisor_id' => 'int',
 		'fecha_inicio' => 'datetime',
 		'fecha_fin' => 'datetime',
-		'almacen_id' => 'int',
-		'supervisor_id' => 'int'
+		'monto_asignado' => 'float',
+		'monto_ejecutado' => 'float'
 	];
 
 	protected $fillable = [
 		'contrato_id',
 		'nombre',
 		'descripcion',
-		'fecha_inicio',
-		'fecha_fin',
 		'almacen_id',
 		'supervisor_id',
+		'fecha_inicio',
+		'fecha_fin',
+		'monto_asignado',
+		'monto_ejecutado',
 		'estado'
 	];
 
@@ -86,19 +90,9 @@ class TblProyecto extends Model
 		return $this->belongsTo(TblEmpleado::class, 'supervisor_id');
 	}
 
-	public function tbl_asignacion_recursos()
-	{
-		return $this->hasMany(TblAsignacionRecurso::class, 'proyecto_id');
-	}
-
 	public function tbl_asistencia()
 	{
 		return $this->hasMany(TblAsistencium::class, 'proyecto_id');
-	}
-
-	public function tbl_avance_proyectos()
-	{
-		return $this->hasMany(TblAvanceProyecto::class, 'proyecto_id');
 	}
 
 	public function tbl_cotizacions()
@@ -111,19 +105,14 @@ class TblProyecto extends Model
 		return $this->hasMany(TblEquipoOperativo::class, 'proyecto_id');
 	}
 
-	public function tbl_incidencia_clientes()
+	public function tbl_facturas()
 	{
-		return $this->hasMany(TblIncidenciaCliente::class, 'proyecto_id');
+		return $this->hasMany(TblFactura::class, 'proyecto_id');
 	}
 
-	public function tbl_incidencia_produccions()
+	public function tbl_inventario_movimientos()
 	{
-		return $this->hasMany(TblIncidenciaProduccion::class, 'proyecto_id');
-	}
-
-	public function tbl_movimiento_inventarios()
-	{
-		return $this->hasMany(TblMovimientoInventario::class, 'proyecto_id');
+		return $this->hasMany(TblInventarioMovimiento::class, 'proyecto_id');
 	}
 
 	public function tbl_orden_compras()
@@ -131,9 +120,19 @@ class TblProyecto extends Model
 		return $this->hasMany(TblOrdenCompra::class, 'proyecto_id');
 	}
 
-	public function tbl_presupuesto_proyectos()
+	public function tbl_proyecto_avances()
 	{
-		return $this->hasMany(TblPresupuestoProyecto::class, 'proyecto_id');
+		return $this->hasMany(TblProyectoAvance::class, 'proyecto_id');
+	}
+
+	public function tbl_proyecto_incidencia()
+	{
+		return $this->hasMany(TblProyectoIncidencium::class, 'proyecto_id');
+	}
+
+	public function tbl_proyecto_materials()
+	{
+		return $this->hasMany(TblProyectoMaterial::class, 'proyecto_id');
 	}
 
 	public function tbl_solicitud_compras()
@@ -141,9 +140,14 @@ class TblProyecto extends Model
 		return $this->hasMany(TblSolicitudCompra::class, 'proyecto_id');
 	}
 
-	public function tbl_stock_almacens()
+	public function tbl_solicitud_despachos()
 	{
-		return $this->hasMany(TblStockAlmacen::class, 'proyecto_id');
+		return $this->hasMany(TblSolicitudDespacho::class, 'proyecto_id');
+	}
+
+	public function tbl_solicitud_materials()
+	{
+		return $this->hasMany(TblSolicitudMaterial::class, 'proyecto_id');
 	}
 
 	public function tbl_tarea_proyectos()
@@ -154,10 +158,5 @@ class TblProyecto extends Model
 	public function tbl_transaccion_contables()
 	{
 		return $this->hasMany(TblTransaccionContable::class, 'proyecto_id');
-	}
-
-	public function tbl_viajes()
-	{
-		return $this->hasMany(TblViaje::class, 'proyecto_id');
 	}
 }

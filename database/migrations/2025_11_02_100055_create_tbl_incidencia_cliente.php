@@ -11,18 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tbl_incidencia_cliente', function (Blueprint $table) {
+        Schema::create('tbl_cliente_incidencia', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('cliente_id');
+            $table->foreignId('cliente_id')->constrained('tbl_cliente')->onDelete('cascade');
+            $table->dateTime('fecha');
             $table->string('tipo', 100);
-            $table->text('descripcion');
-            $table->date('fecha_reporte');
-            $table->string('estado', 50)->default('Pendiente');
-            $table->unsignedBigInteger('proyecto_id')->nullable();
-            $table->timestamps();
-
-            $table->foreign('cliente_id')->references('id')->on('tbl_cliente')->onDelete('cascade');
-            $table->foreign('proyecto_id')->references('id')->on('tbl_proyecto')->onDelete('set null');
+            $table->string('asunto')->nullable();
+            $table->text('detalle')->nullable();
+            $table->string('prioridad', 50)->nullable();
+            $table->string('estado', 50)->nullable();
         });
     }
 
@@ -31,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tbl_incidencia_cliente');
+        Schema::dropIfExists('tbl_cliente_incidencia');
     }
 };

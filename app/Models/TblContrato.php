@@ -15,15 +15,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * Class TblContrato
  * 
  * @property int $id
+ * @property string|null $codigo
  * @property int $cliente_id
- * @property string $numero
+ * @property string $tipo_servicio
+ * @property string|null $descripcion
  * @property Carbon $fecha_firma
+ * @property Carbon|null $fecha_vencimiento
  * @property float $monto_total
  * @property string $estado
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
  * 
  * @property TblCliente $tbl_cliente
+ * @property Collection|TblContratoPago[] $tbl_contrato_pagos
  * @property Collection|TblFactura[] $tbl_facturas
  * @property Collection|TblProyecto[] $tbl_proyectos
  *
@@ -33,17 +35,22 @@ class TblContrato extends Model
 {
     use HasFactory;
 	protected $table = 'tbl_contrato';
+	public $timestamps = false;
 
 	protected $casts = [
 		'cliente_id' => 'int',
 		'fecha_firma' => 'datetime',
+		'fecha_vencimiento' => 'datetime',
 		'monto_total' => 'float'
 	];
 
 	protected $fillable = [
+		'codigo',
 		'cliente_id',
-		'numero',
+		'tipo_servicio',
+		'descripcion',
 		'fecha_firma',
+		'fecha_vencimiento',
 		'monto_total',
 		'estado'
 	];
@@ -51,6 +58,11 @@ class TblContrato extends Model
 	public function tbl_cliente()
 	{
 		return $this->belongsTo(TblCliente::class, 'cliente_id');
+	}
+
+	public function tbl_contrato_pagos()
+	{
+		return $this->hasMany(TblContratoPago::class, 'contrato_id');
 	}
 
 	public function tbl_facturas()

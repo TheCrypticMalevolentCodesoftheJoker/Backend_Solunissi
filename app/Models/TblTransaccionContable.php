@@ -24,17 +24,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property string|null $referencia_id
  * @property string|null $descripcion
  * @property string $estado
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
  * 
  * @property TblCentroCosto $tbl_centro_costo
  * @property TblProyecto|null $tbl_proyecto
  * @property TblTipoTransaccionContable $tbl_tipo_transaccion_contable
  * @property Collection|TblDetalleTransaccionContable[] $tbl_detalle_transaccion_contables
  * @property Collection|TblDocumentoContable[] $tbl_documento_contables
- * @property Collection|TblFactura[] $tbl_facturas
- * @property Collection|TblMantenimientoVehiculo[] $tbl_mantenimiento_vehiculos
- * @property Collection|TblPago[] $tbl_pagos
  *
  * @package App\Models
  */
@@ -42,6 +37,7 @@ class TblTransaccionContable extends Model
 {
     use HasFactory;
 	protected $table = 'tbl_transaccion_contable';
+	public $timestamps = false;
 
 	protected $casts = [
 		'fecha_registro' => 'datetime',
@@ -86,20 +82,5 @@ class TblTransaccionContable extends Model
 	public function tbl_documento_contables()
 	{
 		return $this->hasMany(TblDocumentoContable::class, 'transaccion_id');
-	}
-
-	public function tbl_facturas()
-	{
-		return $this->hasMany(TblFactura::class, 'transaccion_id');
-	}
-
-	public function tbl_mantenimiento_vehiculos()
-	{
-		return $this->hasMany(TblMantenimientoVehiculo::class, 'transaccion_id');
-	}
-
-	public function tbl_pagos()
-	{
-		return $this->hasMany(TblPago::class, 'transaccion_id');
 	}
 }

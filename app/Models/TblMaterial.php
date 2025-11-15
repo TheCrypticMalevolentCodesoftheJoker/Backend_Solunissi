@@ -18,12 +18,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property string $nombre
  * @property string $unidad_medida
  * 
- * @property Collection|TblAsignacionRecurso[] $tbl_asignacion_recursos
+ * @property Collection|TblAlmacenMaterial[] $tbl_almacen_materials
  * @property Collection|TblCotizacionDetalle[] $tbl_cotizacion_detalles
  * @property Collection|TblIncidenciaInventario[] $tbl_incidencia_inventarios
- * @property Collection|TblMovimientoInventario[] $tbl_movimiento_inventarios
+ * @property Collection|TblInventarioMovimientoDetalle[] $tbl_inventario_movimiento_detalles
+ * @property Collection|TblProyectoIncidenciaDetalle[] $tbl_proyecto_incidencia_detalles
+ * @property Collection|TblProyectoMaterial[] $tbl_proyecto_materials
  * @property Collection|TblSolicitudCompraDetalle[] $tbl_solicitud_compra_detalles
- * @property Collection|TblStockAlmacen[] $tbl_stock_almacens
+ * @property Collection|TblSolicitudDespachoDetalle[] $tbl_solicitud_despacho_detalles
+ * @property Collection|TblSolicitudMaterialDetalle[] $tbl_solicitud_material_detalles
  *
  * @package App\Models
  */
@@ -39,9 +42,9 @@ class TblMaterial extends Model
 		'unidad_medida'
 	];
 
-	public function tbl_asignacion_recursos()
+	public function tbl_almacen_materials()
 	{
-		return $this->hasMany(TblAsignacionRecurso::class, 'material_id');
+		return $this->hasMany(TblAlmacenMaterial::class, 'material_id');
 	}
 
 	public function tbl_cotizacion_detalles()
@@ -54,9 +57,19 @@ class TblMaterial extends Model
 		return $this->hasMany(TblIncidenciaInventario::class, 'material_id');
 	}
 
-	public function tbl_movimiento_inventarios()
+	public function tbl_inventario_movimiento_detalles()
 	{
-		return $this->hasMany(TblMovimientoInventario::class, 'material_id');
+		return $this->hasMany(TblInventarioMovimientoDetalle::class, 'material_id');
+	}
+
+	public function tbl_proyecto_incidencia_detalles()
+	{
+		return $this->hasMany(TblProyectoIncidenciaDetalle::class, 'material_id');
+	}
+
+	public function tbl_proyecto_materials()
+	{
+		return $this->hasMany(TblProyectoMaterial::class, 'material_id');
 	}
 
 	public function tbl_solicitud_compra_detalles()
@@ -64,8 +77,13 @@ class TblMaterial extends Model
 		return $this->hasMany(TblSolicitudCompraDetalle::class, 'material_id');
 	}
 
-	public function tbl_stock_almacens()
+	public function tbl_solicitud_despacho_detalles()
 	{
-		return $this->hasMany(TblStockAlmacen::class, 'material_id');
+		return $this->hasMany(TblSolicitudDespachoDetalle::class, 'material_id');
+	}
+
+	public function tbl_solicitud_material_detalles()
+	{
+		return $this->hasMany(TblSolicitudMaterialDetalle::class, 'material_id');
 	}
 }

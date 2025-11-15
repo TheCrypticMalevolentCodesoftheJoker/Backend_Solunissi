@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property int $id
  * @property int $solicitud_compra_id
  * @property int $material_id
- * @property string $unidad_medida
  * @property float $cantidad
  * 
  * @property TblMaterial $tbl_material
@@ -38,7 +37,6 @@ class TblSolicitudCompraDetalle extends Model
 	protected $fillable = [
 		'solicitud_compra_id',
 		'material_id',
-		'unidad_medida',
 		'cantidad'
 	];
 

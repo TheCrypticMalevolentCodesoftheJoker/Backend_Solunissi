@@ -6,7 +6,7 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -14,16 +14,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * Class TblLead
  * 
  * @property int $id
- * @property int $cliente_id
- * @property int|null $asignado_usuario_id
+ * @property string $nombre
+ * @property string|null $apellido
+ * @property string|null $empresa
+ * @property string|null $correo
+ * @property string|null $telefono
  * @property string|null $fuente
- * @property string $estado
- * @property string|null $notas
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property string|null $estado
  * 
- * @property TblUsuario|null $tbl_usuario
- * @property TblCliente $tbl_cliente
+ * @property Collection|TblCliente[] $tbl_clientes
+ * @property Collection|TblLeadComunicacion[] $tbl_lead_comunicacions
  *
  * @package App\Models
  */
@@ -31,27 +31,25 @@ class TblLead extends Model
 {
     use HasFactory;
 	protected $table = 'tbl_lead';
-
-	protected $casts = [
-		'cliente_id' => 'int',
-		'asignado_usuario_id' => 'int'
-	];
+	public $timestamps = false;
 
 	protected $fillable = [
-		'cliente_id',
-		'asignado_usuario_id',
+		'nombre',
+		'apellido',
+		'empresa',
+		'correo',
+		'telefono',
 		'fuente',
-		'estado',
-		'notas'
+		'estado'
 	];
 
-	public function tbl_usuario()
+	public function tbl_clientes()
 	{
-		return $this->belongsTo(TblUsuario::class, 'asignado_usuario_id');
+		return $this->hasMany(TblCliente::class, 'lead_id');
 	}
 
-	public function tbl_cliente()
+	public function tbl_lead_comunicacions()
 	{
-		return $this->belongsTo(TblCliente::class, 'cliente_id');
+		return $this->hasMany(TblLeadComunicacion::class, 'lead_id');
 	}
 }

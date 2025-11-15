@@ -6,7 +6,6 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,20 +14,29 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * Class TblCliente
  * 
  * @property int $id
- * @property string $razon_social
- * @property string $ruc
- * @property string $tipo_cliente
+ * @property int $lead_id
+ * @property string|null $ruc
+ * @property string|null $razon_social
+ * @property string|null $tipo_cliente
  * @property string|null $direccion
- * @property string|null $telefono
- * @property string $correo
- * @property bool $estado
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property string|null $pais
+ * @property string|null $departamento
+ * @property string|null $provincia
+ * @property string|null $distrito
+ * @property string|null $web
+ * @property string|null $sector
+ * @property string|null $referencia
+ * @property string|null $cargo_contacto
+ * @property string|null $area_contacto
+ * @property string|null $linkedin
+ * @property string|null $facebook
+ * @property string|null $twitter
+ * @property string|null $instagram
+ * @property string|null $estado
  * 
- * @property Collection|TblContactoCliente[] $tbl_contacto_clientes
+ * @property TblLead $tbl_lead
+ * @property Collection|TblClienteIncidencium[] $tbl_cliente_incidencia
  * @property Collection|TblContrato[] $tbl_contratos
- * @property Collection|TblIncidenciaCliente[] $tbl_incidencia_clientes
- * @property Collection|TblLead[] $tbl_leads
  *
  * @package App\Models
  */
@@ -36,38 +44,46 @@ class TblCliente extends Model
 {
     use HasFactory;
 	protected $table = 'tbl_cliente';
+	public $timestamps = false;
 
 	protected $casts = [
-		'estado' => 'bool'
+		'lead_id' => 'int'
 	];
 
 	protected $fillable = [
-		'razon_social',
+		'lead_id',
 		'ruc',
+		'razon_social',
 		'tipo_cliente',
 		'direccion',
-		'telefono',
-		'correo',
+		'pais',
+		'departamento',
+		'provincia',
+		'distrito',
+		'web',
+		'sector',
+		'referencia',
+		'cargo_contacto',
+		'area_contacto',
+		'linkedin',
+		'facebook',
+		'twitter',
+		'instagram',
 		'estado'
 	];
 
-	public function tbl_contacto_clientes()
+	public function tbl_lead()
 	{
-		return $this->hasMany(TblContactoCliente::class, 'cliente_id');
+		return $this->belongsTo(TblLead::class, 'lead_id');
+	}
+
+	public function tbl_cliente_incidencia()
+	{
+		return $this->hasMany(TblClienteIncidencium::class, 'cliente_id');
 	}
 
 	public function tbl_contratos()
 	{
 		return $this->hasMany(TblContrato::class, 'cliente_id');
-	}
-
-	public function tbl_incidencia_clientes()
-	{
-		return $this->hasMany(TblIncidenciaCliente::class, 'cliente_id');
-	}
-
-	public function tbl_leads()
-	{
-		return $this->hasMany(TblLead::class, 'cliente_id');
 	}
 }
