@@ -9,6 +9,8 @@ class TblRolSeeder extends Seeder
 {
     public function run(): void
     {
-        TblRol::factory()->count(5)->create();
+        TblRol::create([
+            'NombreRol' => 'Administrador',
+        ]);
     }
 }

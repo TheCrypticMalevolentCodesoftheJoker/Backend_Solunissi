@@ -19,27 +19,48 @@ class EmpleadoController extends Controller
     public function index()
     {
         try {
-            $empleados = TblEmpleado::with('tbl_cargo:id,nombre,salario_base')
-                ->select('id', 'cargo_id', 'dni', 'nombres', 'apellidos', 'email', 'telefono', 'direccion', 'fecha_ingreso', 'estado', 'created_at', 'updated_at')
+            $empleados = TblEmpleado::with('tbl_cargo')->orderBy('id')->get();
+
+            if ($empleados->isEmpty()) {
+                return new ApiResponseResource(
+                    new MessageDTO(true, "No existen empleados registrados", 204, null)
+                );
+            }
+
+            return new ApiResponseResource(
+                new MessageDTO(true, "Empleados obtenidos correctamente", 200, $empleados)
+            );
+        } catch (\Exception $e) {
+            return new ApiResponseResource(
+                new MessageDTO(false, $e->getMessage() ?: "Error al obtener empleados", $e->getCode() ?: 500, null)
+            );
+        }
+    }
+
+    public function indexVendedores()
+    {
+        try {
+            $vendedores = TblEmpleado::with('tbl_cargo')
+                ->where('cargo_id', 4)
                 ->orderBy('id')
                 ->get();
 
-
-            if ($empleados->isEmpty()) {
-                $dto = new MessageDTO(true, "No existen empleados registrados", 204, null);
-                return new ApiResponseResource($dto);
+            if ($vendedores->isEmpty()) {
+                return new ApiResponseResource(
+                    new MessageDTO(true, "No existen vendedores registrados", 204, null)
+                );
             }
 
-            $dto = new MessageDTO(true, "Empleados obtenidos correctamente", 200, $empleados);
-            return new ApiResponseResource($dto);
+            return new ApiResponseResource(
+                new MessageDTO(true, "Vendedores obtenidos correctamente", 200, $vendedores)
+            );
         } catch (\Exception $e) {
-            $code = $e->getCode() ?: 500;
-            $mensaje = $e->getMessage() ?: "Error al obtener empleados";
-
-            $dto = new MessageDTO(false, $mensaje, $code, null);
-            return new ApiResponseResource($dto);
+            return new ApiResponseResource(
+                new MessageDTO(false, $e->getMessage() ?: "Error al obtener vendedores", $e->getCode() ?: 500, null)
+            );
         }
     }
+
 
     public function store(Request $request)
     {

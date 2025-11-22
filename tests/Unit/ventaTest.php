@@ -10,7 +10,7 @@ class ventaTest extends TestCase
     public function test_registrarContrato()
     {
         $data = [
-            'cliente_id' => 1,
+            'cliente_id' => 2,
             'tipo_servicio' => 'Instalacion',
             'descripcion' => 'nuevo contrato',
             'fecha_firma'=> '2025-11-06',

@@ -13,7 +13,7 @@ class proyectoTest extends TestCase
             'almacen_id' => 1,
             'supervisor_id' => 1,
             'fecha_inicio' => '2025-11-06',
-            'monto_asignado' => 2000.00
+            'fecha_fin' => '2025-11-06',
         ];
 
         $response = $this->putJson('/api/proyecto/1', $data);

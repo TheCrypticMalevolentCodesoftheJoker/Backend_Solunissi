@@ -16,22 +16,27 @@ class ProyectoIncidenciaController extends Controller
     {
         try {
             $incidencias = TblProyectoIncidencium::with([
-                'tbl_proyecto:id,nombre',
-                'tbl_empleado:id,nombres,apellidos',
-                'tbl_proyecto_incidencia_detalles.tbl_material:id,nombre,unidad_medida'
-            ])->get();
+                'tbl_proyecto',
+                'tbl_proyecto_incidencia_detalles',
+                'tbl_proyecto_incidencia_detalles.tbl_material'
+            ])
+                ->orderBy('fecha_reporte', 'desc')
+                ->get();
 
-            $dto = new MessageDTO(
-                true,
-                "Lista de incidencias obtenida correctamente",
-                200,
-                $incidencias
+            if ($incidencias->isEmpty()) {
+                return new ApiResponseResource(
+                    new MessageDTO(false, "No existen incidencias registradas.", 404, null)
+                );
+            }
+
+            return new ApiResponseResource(
+                new MessageDTO(true, "Lista de incidencias obtenida correctamente", 200, $incidencias)
             );
-
-            return new ApiResponseResource($dto);
         } catch (\Exception $e) {
-            $dto = new MessageDTO(false, $e->getMessage(), 500, null);
-            return new ApiResponseResource($dto);
+
+            return new ApiResponseResource(
+                new MessageDTO(false, "Error: " . $e->getMessage(), 500, null)
+            );
         }
     }
 
@@ -42,7 +47,6 @@ class ProyectoIncidenciaController extends Controller
         try {
             $incidencia = TblProyectoIncidencium::create([
                 'proyecto_id'   => $request->proyecto_id,
-                'supervisor_id' => $request->supervisor_id,
                 'descripcion'   => $request->descripcion,
                 'fecha_reporte' => now(),
                 'estado'        => 'Pendiente',
@@ -66,11 +70,7 @@ class ProyectoIncidenciaController extends Controller
                 true,
                 "Incidencia registrada correctamente",
                 201,
-                $incidencia->load([
-                    'tbl_proyecto:id,nombre',
-                    'tbl_empleado:id,nombres,apellidos',
-                    'tbl_proyecto_incidencia_detalles.tbl_material:id,nombre,unidad_medida'
-                ])
+                null
             );
 
             return new ApiResponseResource($dto);
@@ -85,23 +85,97 @@ class ProyectoIncidenciaController extends Controller
     public function show($id)
     {
         try {
+
             $incidencia = TblProyectoIncidencium::with([
-                'tbl_proyecto:id,nombre',
-                'tbl_empleado:id,nombres,apellidos',
-                'tbl_proyecto_incidencia_detalles.tbl_material:id,nombre,unidad_medida'
-            ])->findOrFail($id);
+                'tbl_proyecto',
+                'tbl_proyecto_incidencia_detalles',
+                'tbl_proyecto_incidencia_detalles.tbl_material'
+            ])->find($id);
 
-            $dto = new MessageDTO(
-                true,
-                "Incidencia obtenida correctamente",
-                200,
-                $incidencia
+            if (!$incidencia) {
+                return new ApiResponseResource(
+                    new MessageDTO(
+                        false,
+                        "No se encontró la incidencia solicitada",
+                        404,
+                        null
+                    )
+                );
+            }
+
+            if ($incidencia->tbl_proyecto_incidencia_detalles->isEmpty()) {
+                return new ApiResponseResource(
+                    new MessageDTO(
+                        true,
+                        "Incidencia encontrada, pero no tiene detalles registrados",
+                        200,
+                        $incidencia
+                    )
+                );
+            }
+
+            return new ApiResponseResource(
+                new MessageDTO(
+                    true,
+                    "Detalle de la incidencia obtenido correctamente",
+                    200,
+                    $incidencia
+                )
             );
-
-            return new ApiResponseResource($dto);
         } catch (\Exception $e) {
-            $dto = new MessageDTO(false, $e->getMessage(), 404, null);
-            return new ApiResponseResource($dto);
+
+            return new ApiResponseResource(
+                new MessageDTO(
+                    false,
+                    "Error interno: " . $e->getMessage(),
+                    500,
+                    null
+                )
+            );
+        }
+    }
+
+
+    public function showGetByIdProyecto($proyectoId)
+    {
+        try {
+            $incidencias = TblProyectoIncidencium::with([
+                'tbl_proyecto',
+                'tbl_proyecto_incidencia_detalles',
+                'tbl_proyecto_incidencia_detalles.tbl_material'
+            ])
+                ->where('proyecto_id', $proyectoId)
+                ->orderBy('fecha_reporte', 'desc')
+                ->get();
+            if ($incidencias->isEmpty()) {
+                return new ApiResponseResource(
+                    new MessageDTO(
+                        true,
+                        "No se encontraron incidencias registradas para este proyecto",
+                        200,
+                        null
+                    )
+                );
+            }
+
+            return new ApiResponseResource(
+                new MessageDTO(
+                    true,
+                    "Listado de incidencias del proyecto obtenido correctamente",
+                    200,
+                    $incidencias
+                )
+            );
+        } catch (\Exception $e) {
+
+            return new ApiResponseResource(
+                new MessageDTO(
+                    false,
+                    "Error al obtener incidencias del proyecto: " . $e->getMessage(),
+                    500,
+                    null
+                )
+            );
         }
     }
 }

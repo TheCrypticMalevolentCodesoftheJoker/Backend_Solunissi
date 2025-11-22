@@ -18,6 +18,11 @@ class TblAlmacenSeeder extends Seeder
                 'ubicacion' => 'Av. Principal 123, Ciudad',
                 'estado' => true,
             ],
+            [
+                'nombre' => 'Almacén X',
+                'ubicacion' => 'Av. Principal 123, Ciudad',
+                'estado' => true,
+            ],
         ]);
     }
 }

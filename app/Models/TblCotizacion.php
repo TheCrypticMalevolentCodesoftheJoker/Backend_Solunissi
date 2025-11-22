@@ -15,9 +15,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * Class TblCotizacion
  * 
  * @property int $id
+ * @property string|null $codigo
  * @property int $solicitud_compra_id
  * @property int $proveedor_id
- * @property int $proyecto_id
  * @property Carbon $fecha_cotizacion
  * @property float|null $tiempo_entrega_dias
  * @property float|null $costo_envio
@@ -26,7 +26,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property string $estado
  * 
  * @property TblProveedor $tbl_proveedor
- * @property TblProyecto $tbl_proyecto
  * @property TblSolicitudCompra $tbl_solicitud_compra
  * @property Collection|TblCotizacionDetalle[] $tbl_cotizacion_detalles
  * @property Collection|TblOrdenCompra[] $tbl_orden_compras
@@ -42,7 +41,6 @@ class TblCotizacion extends Model
 	protected $casts = [
 		'solicitud_compra_id' => 'int',
 		'proveedor_id' => 'int',
-		'proyecto_id' => 'int',
 		'fecha_cotizacion' => 'datetime',
 		'tiempo_entrega_dias' => 'float',
 		'costo_envio' => 'float',
@@ -51,9 +49,9 @@ class TblCotizacion extends Model
 	];
 
 	protected $fillable = [
+		'codigo',
 		'solicitud_compra_id',
 		'proveedor_id',
-		'proyecto_id',
 		'fecha_cotizacion',
 		'tiempo_entrega_dias',
 		'costo_envio',
@@ -65,11 +63,6 @@ class TblCotizacion extends Model
 	public function tbl_proveedor()
 	{
 		return $this->belongsTo(TblProveedor::class, 'proveedor_id');
-	}
-
-	public function tbl_proyecto()
-	{
-		return $this->belongsTo(TblProyecto::class, 'proyecto_id');
 	}
 
 	public function tbl_solicitud_compra()

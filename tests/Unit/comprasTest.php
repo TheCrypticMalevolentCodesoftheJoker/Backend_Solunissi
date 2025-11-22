@@ -6,28 +6,22 @@ use Tests\TestCase;
 
 class comprasTest extends TestCase
 {
-    public function test_registrarSolicitudCompras()
+    public function test_registrar_proveedor()
     {
-        $data = [
-            'proyecto_id' => 1,
-            'supervisor_id' => 1,
-            'fecha_solicitud' => '2025-11-06',
-            'detalles' => [
-                [
-                    'material_id' => 2,
-                    'unidad_medida' => 'rollo',
-                    'cantidad' => 10
-                ],
-                [
-                    'material_id' => 5,
-                    'unidad_medida' => 'metro',
-                    'cantidad' => 25
-                ]
-            ]
+        $proveedor = [
+            'razon_social'      => 'Comercial Soluciones SAC',
+            'nombre_comercial'  => 'SolucionesTech',
+            'ruc'               => '20601234567',
+            'direccion'         => 'Av. Principal 123 - Lima',
+            'telefono'          => '987654321',
+            'correo'            => 'contacto@solucionestech.com',
+            'pagina_web'        => 'https://solucionestech.com',
+            'contacto_nombre'   => 'Juan Pérez',
+            'contacto_telefono' => '999888777',
+            'contacto_correo'   => 'jperez@solucionestech.com'
         ];
 
-        $response = $this->postJson('/api/compra/solicitud-compras', $data);
-
+        $response = $this->postJson('/api/compra/proveedor', $proveedor);
         echo $response->getContent();
     }
 
@@ -36,46 +30,28 @@ class comprasTest extends TestCase
         $data = [
             'solicitud_compra_id' => 1,
             'proveedor_id' => 1,
-            'proyecto_id' => 1,
             'fecha_cotizacion' => '2025-11-12',
             'tiempo_entrega_dias' => 7,
             'costo_envio' => 100,
             'descuento' => 0,
             'detalles' => [
                 [
-                    'material_id' => 2,
-                    'cantidad' => 10,
-                    'precio_unitario' => 10
-                ],
-                [
-                    'material_id' => 5,
-                    'cantidad' => 20,
+                    'material_id' => 1,
+                    'cantidad' => 30,
                     'precio_unitario' => 10
                 ]
             ]
         ];
 
-        $response = $this->postJson('/api/compra/cotizaciones', $data);
+        $response = $this->postJson('/api/compra/cotizacion', $data);
 
         echo $response->getContent();
     }
 
     public function test_registrarOrdenCompra()
     {
-        $data = [
-            'proyecto_id' => 1,
-            'cotizacion_id' => 1
-        ];
-
-        $response = $this->postJson('/api/compra/ordenes-compra', $data);
-
-        echo $response->getContent();
-    }
-    public function test_aprobarOrdenCompra()
-    {
-        $response = $this->postJson('/api/compra/ordenes-compra/1/aprobar');
-
+        $response = $this->postJson('/api/compra/orden-compra/1');
         echo $response->getContent();
     }
 }
-// php artisan test --filter=comprasTest::test_aprobarOrdenCompra
+// php artisan test --filter=comprasTest::test_registrarOrdenCompra

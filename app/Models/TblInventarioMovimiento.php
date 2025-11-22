@@ -18,6 +18,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property int|null $almacen_destino_id
  * @property int|null $proyecto_id
  * @property string $tipo
+ * @property string|null $referencia
+ * @property string|null $origen_movimiento
  * @property Carbon $fecha_movimiento
  * 
  * @property TblAlmacen|null $tbl_almacen
@@ -43,6 +45,8 @@ class TblInventarioMovimiento extends Model
 		'almacen_destino_id',
 		'proyecto_id',
 		'tipo',
+		'referencia',
+		'origen_movimiento',
 		'fecha_movimiento'
 	];
 

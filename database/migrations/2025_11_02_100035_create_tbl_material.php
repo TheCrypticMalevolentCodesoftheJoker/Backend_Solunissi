@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('tbl_material', function (Blueprint $table) {
             $table->id();
-            $table->string('codigo', 10)->unique()->nullable();
+            $table->string('codigo', 20)->unique()->nullable();
             $table->string('nombre', 150);
             $table->string('unidad_medida', 50);
         });

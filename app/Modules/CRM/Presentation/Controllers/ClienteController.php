@@ -22,7 +22,7 @@ class ClienteController extends Controller
                 return new ApiResponseResource($dto);
             }
 
-            $dto = new MessageDTO(true, 'Listado de clientes', 200, $clientes);
+            $dto = new MessageDTO(true, 'Clientes registrados', 200, $clientes);
             return new ApiResponseResource($dto);
         } catch (\Exception $e) {
             $dto = new MessageDTO(false, 'Error al obtener clientes: ' . $e->getMessage(), 500, null);

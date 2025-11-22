@@ -63,10 +63,9 @@ class ProyectoController extends Controller
                 'almacen_id' => $request->almacen_id,
                 'supervisor_id' => $request->supervisor_id,
                 'fecha_inicio' => $request->fecha_inicio,
-                'fecha_fin' => null,
-                'monto_asignado' => $request->monto_asignado,
+                'fecha_fin' => $request->fecha_fin,
                 'monto_ejecutado' => 0,
-                'estado' => 'En proceso',
+                'estado' => 'Inicializado',
             ]);
 
             DB::commit();

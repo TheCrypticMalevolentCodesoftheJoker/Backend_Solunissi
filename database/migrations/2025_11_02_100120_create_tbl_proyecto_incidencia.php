@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('tbl_proyecto_incidencia', function (Blueprint $table) {
             $table->id();
             $table->foreignId('proyecto_id')->constrained('tbl_proyecto')->onDelete('cascade');
-            $table->foreignId('supervisor_id')->constrained('tbl_empleado')->onDelete('cascade');
             $table->text('descripcion');
             $table->date('fecha_reporte')->default(now());
             $table->string('estado', 50)->default('Pendiente');

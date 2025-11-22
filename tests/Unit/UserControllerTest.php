@@ -48,11 +48,11 @@ class UserControllerTest extends TestCase
     public function test_login_user()
     {
         $loginData = [
-            'email' => 'erison@gmail.com',
-            'contrasena' => 'Uriel.71'
+            'email' => 'uriel@gmail.com',
+            'contrasena' => 'Uriel.12'
         ];
 
-        $response = $this->postJson('/api/auth/login', $loginData);
+        $response = $this->postJson('/api/autenticacion/login', $loginData);
 
         echo $response->getContent();
     }

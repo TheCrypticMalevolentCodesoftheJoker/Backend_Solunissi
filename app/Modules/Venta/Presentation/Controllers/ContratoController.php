@@ -35,7 +35,6 @@ class ContratoController extends Controller
         }
     }
 
-
     public function store(Request $request)
     {
         DB::beginTransaction();
@@ -58,7 +57,7 @@ class ContratoController extends Controller
                 'supervisor_id' => null,
                 'fecha_inicio' => null,
                 'fecha_fin' => null,
-                'monto_asignado' => 0,
+                'monto_asignado' => $request->monto_total,
                 'monto_ejecutado' => 0,
                 'estado' => 'Programado',
             ]);

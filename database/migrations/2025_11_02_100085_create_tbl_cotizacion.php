@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('tbl_cotizacion', function (Blueprint $table) {
             $table->id();
+            $table->string('codigo', 20)->unique()->nullable();
             $table->foreignId('solicitud_compra_id')->constrained('tbl_solicitud_compra')->onDelete('cascade');
             $table->foreignId('proveedor_id')->constrained('tbl_proveedor')->onDelete('cascade');
-            $table->foreignId('proyecto_id')->constrained('tbl_proyecto')->onDelete('cascade');
             $table->date('fecha_cotizacion');
             $table->decimal('tiempo_entrega_dias', 5, 2)->nullable();
             $table->decimal('costo_envio', 12, 2)->nullable();
             $table->decimal('descuento', 12, 2)->nullable();
             $table->decimal('total', 12, 2)->nullable();
-            $table->string('estado', 50)->default('Pendiente');
+            $table->string('estado', 50);
         });
 
         Schema::create('tbl_cotizacion_detalle', function (Blueprint $table) {

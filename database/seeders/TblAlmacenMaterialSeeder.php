@@ -11,11 +11,12 @@ class TblAlmacenMaterialSeeder extends Seeder
     {
         DB::table('tbl_almacen_material')->insert([
             [
-                'almacen_id' => 1,
+                'almacen_id' => 2,
+                'proyecto_id' => 1,
                 'material_id' => 1,
                 'stock' => 120,
-                'stock_minimo' => 20,
-                'stock_maximo' => 200,
+                'stock_minimo' => 0,
+                'stock_maximo' => 0,
             ]
         ]);
     }

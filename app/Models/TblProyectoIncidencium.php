@@ -16,13 +16,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * 
  * @property int $id
  * @property int $proyecto_id
- * @property int $supervisor_id
  * @property string $descripcion
  * @property Carbon $fecha_reporte
  * @property string $estado
  * 
  * @property TblProyecto $tbl_proyecto
- * @property TblEmpleado $tbl_empleado
  * @property Collection|TblProyectoIncidenciaDetalle[] $tbl_proyecto_incidencia_detalles
  *
  * @package App\Models
@@ -35,13 +33,11 @@ class TblProyectoIncidencium extends Model
 
 	protected $casts = [
 		'proyecto_id' => 'int',
-		'supervisor_id' => 'int',
 		'fecha_reporte' => 'datetime'
 	];
 
 	protected $fillable = [
 		'proyecto_id',
-		'supervisor_id',
 		'descripcion',
 		'fecha_reporte',
 		'estado'
@@ -50,11 +46,6 @@ class TblProyectoIncidencium extends Model
 	public function tbl_proyecto()
 	{
 		return $this->belongsTo(TblProyecto::class, 'proyecto_id');
-	}
-
-	public function tbl_empleado()
-	{
-		return $this->belongsTo(TblEmpleado::class, 'supervisor_id');
 	}
 
 	public function tbl_proyecto_incidencia_detalles()

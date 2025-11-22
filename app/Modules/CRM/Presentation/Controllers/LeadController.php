@@ -21,7 +21,7 @@ class LeadController extends Controller
                 return new ApiResponseResource($dto);
             }
 
-            $dto = new MessageDTO(true, 'Listado de leads', 200, $leads);
+            $dto = new MessageDTO(true, 'Leads registrados', 200, $leads);
             return new ApiResponseResource($dto);
         } catch (\Exception $e) {
             $dto = new MessageDTO(false, 'Error al obtener leads: ' . $e->getMessage(), 500, null);
@@ -64,7 +64,7 @@ class LeadController extends Controller
             if (!$lead) {
                 $dto = new MessageDTO(false, 'Lead no encontrado', 404, null);
             } else {
-                $dto = new MessageDTO(true, 'Lead encontrado', 200, $lead);
+                $dto = new MessageDTO(true, 'Detalle de lead', 200, $lead);
             }
 
             return new ApiResponseResource($dto);

@@ -5,20 +5,22 @@ namespace Modules\Produccion\Presentation\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Routing\Controller;
-use App\Models\TblAlmacenMaterial;
-use App\Models\TblInventarioMovimiento;
-use App\Models\TblInventarioMovimientoDetalle;
-use App\Models\TblProyecto;
-use App\Models\TblSolicitudCompra;
-use App\Models\TblSolicitudCompraDetalle;
-use App\Models\TblSolicitudDespacho;
-use App\Models\TblSolicitudDespachoDetalle;
-use App\Models\TblSolicitudMaterial;
-use App\Models\TblSolicitudMaterialDetalle;
+use App\Models\TblAlmacenMaterial; // inventario
+use App\Models\TblInventarioMovimiento; // inventario
+use App\Models\TblInventarioMovimientoDetalle;  // inventario
+use App\Models\TblProyecto; // Proyecto
+use App\Models\TblSMPendiente;
+use App\Models\TblSMPendienteDetalle;
+use App\Models\TblSolicitudCompra; // compra
+use App\Models\TblSolicitudCompraDetalle; // compra
+use App\Models\TblSolicitudDespacho; // logistica
+use App\Models\TblSolicitudDespachoDetalle; // logistica
+use App\Models\TblSolicitudMaterial; // produccion
+use App\Models\TblSolicitudMaterialDetalle; // produccion
 use Modules\Shared\Application\DTOs\MessageDTO;
 use Modules\Shared\Presentation\Resources\ApiResponseResource;
 
-class SolicitudMaterialController extends Controller
+class ProyectoSolicitudMaterialController extends Controller
 {
     public function index()
     {
@@ -56,7 +58,8 @@ class SolicitudMaterialController extends Controller
             $proyecto = TblProyecto::findOrFail($request->proyecto_id);
             // 2. Registrar la solicitud principal (encabezado)
             $solicitud = TblSolicitudMaterial::create([
-                'proyecto_id' => $request->proyecto_id,
+                'codigo' => 'SOLM-' . str_pad(TblSolicitudMaterial::max('id') + 1, 5, '0', STR_PAD_LEFT),
+                'proyecto_id' => $proyecto->id,
                 'fecha_solicitud' => now(),
                 'estado' => 'Pendiente',
             ]);
@@ -74,6 +77,7 @@ class SolicitudMaterialController extends Controller
             // 5. Evaluar stock por cada material y dividir: lo disponible (despacho) y lo faltante (compra)
             foreach ($request->materiales as $m) {
                 $almacenMaterial = TblAlmacenMaterial::where('almacen_id', $proyecto->almacen_id)
+                    ->where('proyecto_id', $proyecto->id)
                     ->where('material_id', $m['material_id'])
                     ->first();
 
@@ -95,6 +99,8 @@ class SolicitudMaterialController extends Controller
                         'almacen_destino_id' => null,
                         'proyecto_id' => $proyecto->id,
                         'tipo' => 'Salida',
+                        'referencia' => $solicitud->codigo,
+                        'origen_movimiento' => 'Produccion',
                         'fecha_movimiento' => now(),
                     ]);
                     // Registrar detalle del movimiento
@@ -130,10 +136,29 @@ class SolicitudMaterialController extends Controller
                     ]));
                 }
             }
-            // 7. Registrar solicitud de compra (lo que falta en almacén)
+            // 7a. Registrar respaldo de materiales pendientes
+            if (!empty($detalleCompra)) {
+                $respaldo = TblSMPendiente::create([
+                    'solicitud_material_id' => $solicitud->id,
+                    'proyecto_id' => $proyecto->id,
+                    'fecha' => now(),
+                    'estado' => 'Pendiente',
+                ]);
+
+                foreach ($detalleCompra as $c) {
+                    TblSMPendienteDetalle::create([
+                        's_m_pendiente_id' => $respaldo->id,
+                        'material_id' => $c['material_id'],
+                        'cantidad' => $c['cantidad']
+                    ]);
+                }
+            }
+
+            // 7b. Registrar solicitud de compra (lo que falta en almacén)
             $compra = null;
             if (!empty($detalleCompra)) {
                 $compra = TblSolicitudCompra::create([
+                    'codigo' => 'SOLCPR-' . str_pad(TblSolicitudCompra::max('id') + 1, 5, '0', STR_PAD_LEFT),
                     'solicitud_material_id' => $solicitud->id,
                     'proyecto_id' => $proyecto->id,
                     'fecha_solicitud' => now(),
@@ -146,6 +171,7 @@ class SolicitudMaterialController extends Controller
                     ]));
                 }
             }
+
             // 8. Determinar estado final de la solicitud (completa, parcial o pendiente)
             if (!empty($detalleCompra) && !empty($detalleDespacho)) {
                 $solicitud->estado = 'Incompleta';

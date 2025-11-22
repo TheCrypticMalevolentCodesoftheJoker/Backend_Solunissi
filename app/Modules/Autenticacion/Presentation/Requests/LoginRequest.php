@@ -28,7 +28,7 @@ class LoginRequest extends FormRequest
         return [
             'email.required' => 'El correo electrónico es obligatorio.',
             'email.email' => 'El correo debe tener un formato válido.',
-            'email.regex' => 'Solo se permiten correos @gmail.com.',
+            'email.regex' => 'Solo se permiten correos @gmail.com',
             'contrasena.required' => 'La contraseña es obligatoria.',
         ];
     }

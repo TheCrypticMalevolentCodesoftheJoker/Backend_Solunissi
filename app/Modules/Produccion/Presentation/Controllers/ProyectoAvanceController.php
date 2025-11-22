@@ -16,21 +16,20 @@ class ProyectoAvanceController extends Controller
     public function index()
     {
         try {
-            $avances = TblProyectoAvance::with([
-                'tbl_proyecto:id,nombre,fecha_inicio,fecha_fin'
-            ])
+            $avances = TblProyectoAvance::with(['tbl_proyecto'])
                 ->orderBy('fecha_registro', 'desc')
                 ->get();
 
-            $dto = new MessageDTO(
-                true,
-                "Listado de avances de proyectos obtenido correctamente",
-                200,
-                $avances
-            );
+            if ($avances->isEmpty()) {
+                $dto = new MessageDTO(true, "No existen avances registrados", 200, null);
+                return new ApiResponseResource($dto);
+            }
+
+            $dto = new MessageDTO(true, "Listado de avances de proyectos obtenido correctamente", 200, $avances);
 
             return new ApiResponseResource($dto);
         } catch (\Exception $e) {
+
             $dto = new MessageDTO(false, $e->getMessage(), 500, null);
             return new ApiResponseResource($dto);
         }
@@ -41,54 +40,86 @@ class ProyectoAvanceController extends Controller
         DB::beginTransaction();
 
         try {
+
             $proyecto = TblProyecto::findOrFail($request->proyecto_id);
+            if ($proyecto->estado === 'Pendiente de cierre') {
+                return new ApiResponseResource(
+                    new MessageDTO(false, "Este proyecto ya está pendiente de cierre. No se pueden registrar más avances.", 400, null)
+                );
+            }
 
             $fechaInicio = Carbon::parse($proyecto->fecha_inicio);
-            $fechaFin = Carbon::parse($proyecto->fecha_fin);
-            $hoy = Carbon::now();
+            $fechaFin    = Carbon::parse($proyecto->fecha_fin);
+            $hoy         = Carbon::now();
 
-            $diasTotales = $fechaInicio->diffInDays($fechaFin);
-            $diasTranscurridos = $fechaInicio->diffInDays($hoy);
+            $diasTotales       = $fechaInicio->diffInDays($fechaFin);
+            $diasTranscurridos = $fechaInicio->diffInDays(min($fechaFin, $hoy));
 
             $porcentajePlanificado = $diasTotales > 0
                 ? min(($diasTranscurridos / $diasTotales) * 100, 100)
                 : 0;
 
             $porcentajeReal = $request->porcentaje_avance;
-            if ($porcentajeReal > $porcentajePlanificado) {
-                $estado = 'Adelantado';
-            } elseif ($porcentajeReal < $porcentajePlanificado) {
-                $estado = 'Retrasado';
+
+            if ($porcentajeReal == 100) {
+                $estadoAvance = "Culminado";
             } else {
-                $estado = 'Optimo';
+                if ($porcentajeReal > $porcentajePlanificado) {
+                    $estadoAvance = 'Adelantado';
+                } elseif ($porcentajeReal < $porcentajePlanificado) {
+                    $estadoAvance = 'Retrasado';
+                } else {
+                    $estadoAvance = 'Óptimo';
+                }
             }
 
             $avance = TblProyectoAvance::create([
-                'proyecto_id'       => $request->proyecto_id,
+                'proyecto_id'       => $proyecto->id,
                 'titulo'            => $request->titulo,
                 'descripcion'       => $request->descripcion,
                 'fecha_registro'    => now(),
                 'porcentaje_avance' => $porcentajeReal,
-                'estado'            => $estado,
+                'estado'            => $estadoAvance,
             ]);
+
+            if ($porcentajeReal == 100) {
+                $proyecto->estado = 'Pendiente de cierre';
+            } else {
+                $proyecto->estado = 'En curso';
+            }
+
+            $proyecto->save();
 
             DB::commit();
 
-            $dto = new MessageDTO(true, "Avance del proyecto registrado correctamente. Estado: {$estado}", 201, $avance->load('tbl_proyecto:id,nombre,fecha_inicio,fecha_fin'));
-            return new ApiResponseResource($dto);
+            return new ApiResponseResource(
+                new MessageDTO(true, "Avance registrado correctamente. Estado del avance: {$estadoAvance}", 201, null)
+            );
         } catch (\Exception $e) {
+
             DB::rollBack();
-            $dto = new MessageDTO(false, $e->getMessage(), 500, null);
-            return new ApiResponseResource($dto);
+
+            return new ApiResponseResource(
+                new MessageDTO(false, "Error al registrar el avance: " . $e->getMessage(), 500, null)
+            );
         }
     }
 
     public function show($id)
     {
         try {
-            $avance = TblProyectoAvance::with([
-                'tbl_proyecto:id,nombre,fecha_inicio,fecha_fin'
-            ])->findOrFail($id);
+            $avance = TblProyectoAvance::with(['tbl_proyecto'])
+                ->find($id);
+
+            if (!$avance) {
+                $dto = new MessageDTO(
+                    false,
+                    "El avance solicitado no existe",
+                    404,
+                    null
+                );
+                return new ApiResponseResource($dto);
+            }
 
             $dto = new MessageDTO(
                 true,
@@ -99,6 +130,51 @@ class ProyectoAvanceController extends Controller
 
             return new ApiResponseResource($dto);
         } catch (\Exception $e) {
+
+            $dto = new MessageDTO(false, $e->getMessage(), 500, null);
+            return new ApiResponseResource($dto);
+        }
+    }
+
+    public function showGetByIdProyecto($proyectoId)
+    {
+        try {
+            $proyecto = TblProyecto::find($proyectoId);
+
+            if (!$proyecto) {
+                $dto = new MessageDTO(
+                    false,
+                    "El proyecto solicitado no existe",
+                    404,
+                    null
+                );
+                return new ApiResponseResource($dto);
+            }
+            $avances = TblProyectoAvance::with(['tbl_proyecto'])
+                ->where('proyecto_id', $proyectoId)
+                ->orderBy('fecha_registro', 'desc')
+                ->get();
+
+            if ($avances->isEmpty()) {
+                $dto = new MessageDTO(
+                    true,
+                    "El proyecto no tiene avances registrados",
+                    200,
+                    null
+                );
+                return new ApiResponseResource($dto);
+            }
+
+            $dto = new MessageDTO(
+                true,
+                "Listado de avances del proyecto obtenido correctamente",
+                200,
+                $avances
+            );
+
+            return new ApiResponseResource($dto);
+        } catch (\Exception $e) {
+
             $dto = new MessageDTO(false, $e->getMessage(), 500, null);
             return new ApiResponseResource($dto);
         }

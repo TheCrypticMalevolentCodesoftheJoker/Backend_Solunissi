@@ -13,12 +13,20 @@ return new class extends Migration
     {
         Schema::create('tbl_proveedor', function (Blueprint $table) {
             $table->id();
-            $table->string('razon_social', 150);
+            $table->string('razon_social', 180);
+            $table->string('nombre_comercial', 150)->nullable();
             $table->string('ruc', 11)->unique();
+
             $table->string('direccion', 255)->nullable();
-            $table->string('telefono', 15)->nullable();
-            $table->string('correo', 100)->unique();
-            $table->boolean('estado')->default(true);
+            $table->string('telefono', 20)->nullable();
+            $table->string('correo', 120)->nullable();
+            $table->string('pagina_web', 150)->nullable();
+
+            $table->string('contacto_nombre', 120)->nullable();
+            $table->string('contacto_telefono', 20)->nullable();
+            $table->string('contacto_correo', 120)->nullable();
+
+            $table->string('estado', 50);
         });
     }
 

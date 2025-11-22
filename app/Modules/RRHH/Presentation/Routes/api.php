@@ -12,7 +12,11 @@ Route::prefix('rrhh')->group(function () {
 
     // Empleados
     Route::get('/empleados', [EmpleadoController::class, 'index']);
+    Route::get('/vendedores', [EmpleadoController::class, 'indexVendedores']);
     Route::post('empleados', [EmpleadoController::class, 'store']);
+
+
+    
     Route::post('/equipos-operativos', [EmpleadoController::class, 'asignarEquipoOperativo']);
     Route::get('/equipos-operativos', [EmpleadoController::class, 'consultarEquipoOperativo']);
     Route::post('/asistencia', [EmpleadoController::class, 'registrarAsistencia']);

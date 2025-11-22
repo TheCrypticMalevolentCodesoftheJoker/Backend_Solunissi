@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('tbl_solicitud_material', function (Blueprint $table) {
             $table->id();
+            $table->string('codigo', 20)->unique()->nullable();
             $table->foreignId('proyecto_id')->constrained('tbl_proyecto')->onDelete('cascade');
             $table->date('fecha_solicitud');
             $table->string('estado', 50);

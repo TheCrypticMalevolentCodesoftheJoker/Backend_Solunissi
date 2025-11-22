@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * 
  * @property int $id
  * @property int $almacen_id
+ * @property int|null $proyecto_id
  * @property int $material_id
  * @property float $stock
  * @property float $stock_minimo
@@ -21,6 +22,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * 
  * @property TblAlmacen $tbl_almacen
  * @property TblMaterial $tbl_material
+ * @property TblProyecto|null $tbl_proyecto
  *
  * @package App\Models
  */
@@ -32,6 +34,7 @@ class TblAlmacenMaterial extends Model
 
 	protected $casts = [
 		'almacen_id' => 'int',
+		'proyecto_id' => 'int',
 		'material_id' => 'int',
 		'stock' => 'float',
 		'stock_minimo' => 'float',
@@ -40,6 +43,7 @@ class TblAlmacenMaterial extends Model
 
 	protected $fillable = [
 		'almacen_id',
+		'proyecto_id',
 		'material_id',
 		'stock',
 		'stock_minimo',
@@ -54,5 +58,10 @@ class TblAlmacenMaterial extends Model
 	public function tbl_material()
 	{
 		return $this->belongsTo(TblMaterial::class, 'material_id');
+	}
+
+	public function tbl_proyecto()
+	{
+		return $this->belongsTo(TblProyecto::class, 'proyecto_id');
 	}
 }

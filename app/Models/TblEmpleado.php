@@ -35,7 +35,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property Collection|TblIncidenciaInventario[] $tbl_incidencia_inventarios
  * @property Collection|TblLeadComunicacion[] $tbl_lead_comunicacions
  * @property Collection|TblProyecto[] $tbl_proyectos
- * @property Collection|TblProyectoIncidencium[] $tbl_proyecto_incidencia
  * @property Collection|TblTareaProyecto[] $tbl_tarea_proyectos
  *
  * @package App\Models
@@ -101,11 +100,6 @@ class TblEmpleado extends Model
 	public function tbl_proyectos()
 	{
 		return $this->hasMany(TblProyecto::class, 'supervisor_id');
-	}
-
-	public function tbl_proyecto_incidencia()
-	{
-		return $this->hasMany(TblProyectoIncidencium::class, 'supervisor_id');
 	}
 
 	public function tbl_tarea_proyectos()

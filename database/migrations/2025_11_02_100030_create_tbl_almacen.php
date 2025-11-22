@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('tbl_almacen', function (Blueprint $table) {
             $table->id();
+            $table->string('codigo', 20)->unique()->nullable();
             $table->string('nombre', 100);
             $table->string('ubicacion', 150)->nullable();
-            $table->boolean('estado')->default(true);
+            $table->string('estado', 50);
         });
     }
 

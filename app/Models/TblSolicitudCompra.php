@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * Class TblSolicitudCompra
  * 
  * @property int $id
+ * @property string|null $codigo
  * @property int $solicitud_material_id
  * @property int $proyecto_id
  * @property Carbon $fecha_solicitud
@@ -40,6 +41,7 @@ class TblSolicitudCompra extends Model
 	];
 
 	protected $fillable = [
+		'codigo',
 		'solicitud_material_id',
 		'proyecto_id',
 		'fecha_solicitud',

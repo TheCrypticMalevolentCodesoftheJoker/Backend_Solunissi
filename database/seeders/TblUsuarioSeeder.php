@@ -11,6 +11,14 @@ class TblUsuarioSeeder extends Seeder
 
     public function run(): void
     {
-        TblUsuario::factory()->count(5)->create();  
+        TblUsuario::create([
+            'Nombre'        => 'Uriel',
+            'Apellidos'     => 'Turpo',
+            'Telefono'      => '123456789',
+            'Email'         => 'uriel@gmail.com',
+            'Contrasena'    => Hash::make('Uriel.12'), 
+            'Estado'        => true,
+            'RolID'         => 1
+        ]);
     }
 }

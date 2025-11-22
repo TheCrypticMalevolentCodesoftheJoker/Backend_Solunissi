@@ -4,8 +4,8 @@ use Illuminate\Support\Facades\Route;
 use Modules\Produccion\Presentation\Controllers\ProyectoAvanceController;
 use Modules\Produccion\Presentation\Controllers\ProyectoIncidenciaController;
 use Modules\Produccion\Presentation\Controllers\ProyectoMaterialController;
-use Modules\Produccion\Presentation\Controllers\ReportesController;
-use Modules\Produccion\Presentation\Controllers\SolicitudMaterialController;
+use Modules\Produccion\Presentation\Controllers\ProyectoSolicitudMaterialController;
+use Modules\Produccion\Presentation\Controllers\ProyectoSoMaPendienteController;
 
 Route::prefix('produccion')->group(function () {
     // Proyecto materiales
@@ -14,18 +14,19 @@ Route::prefix('produccion')->group(function () {
     Route::get('/proyecto-material/{id}', [ProyectoMaterialController::class, 'show']);
 
     // Solicitar Materiales
-    Route::post('/solicitud-material', [SolicitudMaterialController::class, 'store']);
+    Route::get('/solicitud-material', [ProyectoSolicitudMaterialController::class, 'index']);
+    Route::post('/solicitud-material', [ProyectoSolicitudMaterialController::class, 'store']);
+    Route::get('/solicitud-material/{id}', [ProyectoSolicitudMaterialController::class, 'show']);
 
-    // Proyecto materiales
+    // Proyecto avance
     Route::get('/proyecto-avance', [ProyectoAvanceController::class, 'index']);
     Route::post('/proyecto-avance', [ProyectoAvanceController::class, 'store']);
     Route::get('/proyecto-avance/{id}', [ProyectoAvanceController::class, 'show']);
+    Route::get('/proyecto-avance/{id}/proyecto', [ProyectoAvanceController::class, 'showGetByIdProyecto']);
 
     // Proyecto incidencias
     Route::get('/proyecto-incidencia', [ProyectoIncidenciaController::class, 'index']);
     Route::post('/proyecto-incidencia', [ProyectoIncidenciaController::class, 'store']);
     Route::get('/proyecto-incidencia/{id}', [ProyectoIncidenciaController::class, 'show']);
-
-    // Reportes
-    Route::get('/reporte/{id}', [ReportesController::class, 'reportePDF']);
+    Route::get('/proyecto-incidencia/{id}/proyecto', [ProyectoIncidenciaController::class, 'showGetByIdProyecto']);
 });

@@ -15,11 +15,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * 
  * @property int $id
  * @property string $razon_social
+ * @property string|null $nombre_comercial
  * @property string $ruc
  * @property string|null $direccion
  * @property string|null $telefono
- * @property string $correo
- * @property bool $estado
+ * @property string|null $correo
+ * @property string|null $pagina_web
+ * @property string|null $contacto_nombre
+ * @property string|null $contacto_telefono
+ * @property string|null $contacto_correo
+ * @property string $estado
  * 
  * @property Collection|TblCotizacion[] $tbl_cotizacions
  *
@@ -31,16 +36,17 @@ class TblProveedor extends Model
 	protected $table = 'tbl_proveedor';
 	public $timestamps = false;
 
-	protected $casts = [
-		'estado' => 'bool'
-	];
-
 	protected $fillable = [
 		'razon_social',
+		'nombre_comercial',
 		'ruc',
 		'direccion',
 		'telefono',
 		'correo',
+		'pagina_web',
+		'contacto_nombre',
+		'contacto_telefono',
+		'contacto_correo',
 		'estado'
 	];
 

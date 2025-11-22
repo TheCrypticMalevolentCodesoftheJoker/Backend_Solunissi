@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreignId('almacen_destino_id')->nullable()->constrained('tbl_almacen')->onDelete('set null');
             $table->foreignId('proyecto_id')->nullable()->constrained('tbl_proyecto')->onDelete('set null');
             $table->string('tipo', 50);
+            $table->string('referencia', 20)->nullable();
+            $table->string('origen_movimiento', 100)->nullable();
             $table->dateTime('fecha_movimiento')->default(now());
         });
         Schema::create('tbl_inventario_movimiento_detalle', function (Blueprint $table) {

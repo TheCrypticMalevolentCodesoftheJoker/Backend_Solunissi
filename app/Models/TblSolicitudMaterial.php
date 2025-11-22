@@ -15,11 +15,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * Class TblSolicitudMaterial
  * 
  * @property int $id
+ * @property string|null $codigo
  * @property int $proyecto_id
  * @property Carbon $fecha_solicitud
  * @property string $estado
  * 
  * @property TblProyecto $tbl_proyecto
+ * @property Collection|TblSMPendiente[] $tbl_s_m_pendientes
  * @property Collection|TblSolicitudCompra[] $tbl_solicitud_compras
  * @property Collection|TblSolicitudDespacho[] $tbl_solicitud_despachos
  * @property Collection|TblSolicitudMaterialDetalle[] $tbl_solicitud_material_detalles
@@ -38,6 +40,7 @@ class TblSolicitudMaterial extends Model
 	];
 
 	protected $fillable = [
+		'codigo',
 		'proyecto_id',
 		'fecha_solicitud',
 		'estado'
@@ -46,6 +49,11 @@ class TblSolicitudMaterial extends Model
 	public function tbl_proyecto()
 	{
 		return $this->belongsTo(TblProyecto::class, 'proyecto_id');
+	}
+
+	public function tbl_s_m_pendientes()
+	{
+		return $this->hasMany(TblSMPendiente::class, 'solicitud_material_id');
 	}
 
 	public function tbl_solicitud_compras()

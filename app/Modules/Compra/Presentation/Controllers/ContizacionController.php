@@ -16,25 +16,36 @@ class ContizacionController extends Controller
     {
         try {
             $cotizaciones = TblCotizacion::with([
-                'tbl_proyecto:id,nombre',
-                'tbl_proveedor:id,razon_social,ruc,correo',
-                'tbl_solicitud_compra:id,fecha_solicitud,estado',
-                'tbl_cotizacion_detalles.tbl_material:id,nombre,unidad_medida'
+                'tbl_solicitud_compra',
+                'tbl_cotizacion_detalles.tbl_material',
+                'tbl_proveedor',
             ])
                 ->orderBy('fecha_cotizacion', 'desc')
                 ->get();
 
-            $dto = new MessageDTO(
-                true,
-                "Listado de cotizaciones obtenido correctamente",
-                200,
-                $cotizaciones
-            );
+            if ($cotizaciones->isEmpty()) {
+                return new ApiResponseResource(
+                    new MessageDTO(
+                        true,
+                        "No existen cotizaciones registradas",
+                        200,
+                        []
+                    )
+                );
+            }
 
-            return new ApiResponseResource($dto);
+            return new ApiResponseResource(
+                new MessageDTO(
+                    true,
+                    "Listado de cotizaciones obtenido correctamente",
+                    200,
+                    $cotizaciones
+                )
+            );
         } catch (\Exception $e) {
-            $dto = new MessageDTO(false, $e->getMessage(), 500, null);
-            return new ApiResponseResource($dto);
+            return new ApiResponseResource(
+                new MessageDTO(false, "Error al obtener cotizaciones: " . $e->getMessage(), 500, null)
+            );
         }
     }
 
@@ -44,15 +55,15 @@ class ContizacionController extends Controller
 
         try {
             $cotizacion = TblCotizacion::create([
-                'solicitud_compra_id' => $request->input('solicitud_compra_id'),
-                'proveedor_id'        => $request->input('proveedor_id'),
-                'proyecto_id'         => $request->input('proyecto_id'),
-                'fecha_cotizacion'    => $request->input('fecha_cotizacion'),
-                'tiempo_entrega_dias' => $request->input('tiempo_entrega_dias'),
-                'costo_envio'         => $request->input('costo_envio', 0),
-                'descuento'           => $request->input('descuento', 0),
+                'codigo' => 'COT-' . str_pad(TblCotizacion::max('id') + 1, 5, '0', STR_PAD_LEFT),
+                'solicitud_compra_id' => $request->solicitud_compra_id,
+                'proveedor_id'        => $request->proveedor_id,
+                'fecha_cotizacion'    => $request->fecha_cotizacion,
+                'tiempo_entrega_dias' => $request->tiempo_entrega_dias,
+                'costo_envio'         => $request->costo_envio,
+                'descuento'           => $request->descuento,
                 'total'               => 0,
-                'estado'              => 'Pendiente',
+                'estado'              => 'Registrado',
             ]);
 
             $total = 0;
@@ -72,23 +83,14 @@ class ContizacionController extends Controller
             $cotizacion->update(['total' => $totalFinal]);
 
             DB::commit();
-
-            $dto = new MessageDTO(
-                true,
-                "Cotización registrada correctamente",
-                201,
-                $cotizacion->load('tbl_cotizacion_detalles')
-            );
-
+            $dto = new MessageDTO(true, "Cotización registrada correctamente", 201, null);
             return new ApiResponseResource($dto);
         } catch (\Exception $e) {
             DB::rollBack();
-
             $code = (int) $e->getCode();
             if ($code === 0) {
                 $code = 500;
             }
-
             $dto = new MessageDTO(false, $e->getMessage(), $code, null);
             return new ApiResponseResource($dto);
         }
@@ -98,44 +100,71 @@ class ContizacionController extends Controller
     {
         try {
             $cotizacion = TblCotizacion::with([
-                'tbl_proyecto:id,nombre',
-                'tbl_proveedor:id,razon_social,ruc,correo,telefono',
-                'tbl_solicitud_compra:id,fecha_solicitud,estado',
-                'tbl_cotizacion_detalles.tbl_material:id,nombre,unidad_medida'
+                'tbl_solicitud_compra',
+                'tbl_cotizacion_detalles.tbl_material',
+                'tbl_proveedor',
             ])->findOrFail($id);
 
-            $dto = new MessageDTO(true, "Cotización obtenida correctamente", 200, $cotizacion);
-
-            return new ApiResponseResource($dto);
+            return new ApiResponseResource(
+                new MessageDTO(
+                    true,
+                    "Detalle de la cotización obtenido correctamente",
+                    200,
+                    $cotizacion
+                )
+            );
         } catch (\Exception $e) {
-            $dto = new MessageDTO(false, "Cotización no encontrada", 404, null);
-            return new ApiResponseResource($dto);
+            return new ApiResponseResource(
+                new MessageDTO(
+                    false,
+                    "Cotización no encontrada: " . $e->getMessage(),
+                    404,
+                    null
+                )
+            );
         }
     }
-    
-    public function showBySolicitud($solicitudId)
+
+    public function showByIdSolicitudCompra($solicitudCompraId)
     {
         try {
             $cotizaciones = TblCotizacion::with([
-                'tbl_proyecto:id,nombre',
-                'tbl_proveedor:id,razon_social,ruc,correo,telefono',
-                'tbl_solicitud_compra:id,fecha_solicitud,estado',
-                'tbl_cotizacion_detalles.tbl_material:id,nombre,unidad_medida'
+                'tbl_solicitud_compra',
+                'tbl_cotizacion_detalles.tbl_material',
+                'tbl_proveedor',
             ])
-                ->where('solicitud_compra_id', $solicitudId)
+                ->where('solicitud_compra_id', $solicitudCompraId)
                 ->orderBy('fecha_cotizacion', 'desc')
                 ->get();
 
             if ($cotizaciones->isEmpty()) {
-                $dto = new MessageDTO(false, "No existen cotizaciones para esta solicitud", 404, []);
-                return new ApiResponseResource($dto);
+                return new ApiResponseResource(
+                    new MessageDTO(
+                        true,
+                        "No existen cotizaciones registradas para esta solicitud de compra",
+                        200,
+                        []
+                    )
+                );
             }
 
-            $dto = new MessageDTO(true, "Cotizaciones obtenidas correctamente", 200, $cotizaciones);
-            return new ApiResponseResource($dto);
+            return new ApiResponseResource(
+                new MessageDTO(
+                    true,
+                    "Listado de cotizaciones para la solicitud de compra obtenido correctamente",
+                    200,
+                    $cotizaciones
+                )
+            );
         } catch (\Exception $e) {
-            $dto = new MessageDTO(false, $e->getMessage(), 500, null);
-            return new ApiResponseResource($dto);
+            return new ApiResponseResource(
+                new MessageDTO(
+                    false,
+                    "Error al obtener cotizaciones: " . $e->getMessage(),
+                    500,
+                    null
+                )
+            );
         }
     }
 }
