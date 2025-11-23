@@ -10,32 +10,32 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
- * Class TblSMPendienteDetalle
+ * Class TblSoliMatPendDet
  * 
  * @property int $id
- * @property int $s_m_pendiente_id
+ * @property int $soli_mat_pend_id
  * @property int $material_id
  * @property float $cantidad
  * 
  * @property TblMaterial $tbl_material
- * @property TblSMPendiente $tbl_s_m_pendiente
+ * @property TblSoliMatPend $tbl_soli_mat_pend
  *
  * @package App\Models
  */
-class TblSMPendienteDetalle extends Model
+class TblSoliMatPendDet extends Model
 {
     use HasFactory;
-	protected $table = 'tbl_s_m_pendiente_detalle';
+	protected $table = 'tbl_soli_mat_pend_det';
 	public $timestamps = false;
 
 	protected $casts = [
-		's_m_pendiente_id' => 'int',
+		'soli_mat_pend_id' => 'int',
 		'material_id' => 'int',
 		'cantidad' => 'float'
 	];
 
 	protected $fillable = [
-		's_m_pendiente_id',
+		'soli_mat_pend_id',
 		'material_id',
 		'cantidad'
 	];
@@ -45,8 +45,8 @@ class TblSMPendienteDetalle extends Model
 		return $this->belongsTo(TblMaterial::class, 'material_id');
 	}
 
-	public function tbl_s_m_pendiente()
+	public function tbl_soli_mat_pend()
 	{
-		return $this->belongsTo(TblSMPendiente::class, 's_m_pendiente_id');
+		return $this->belongsTo(TblSoliMatPend::class, 'soli_mat_pend_id');
 	}
 }

@@ -12,37 +12,37 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
- * Class TblSolicitudCompra
+ * Class TblCompra
  * 
  * @property int $id
  * @property string|null $codigo
- * @property int $solicitud_material_id
+ * @property int $soli_mat_id
  * @property int $proyecto_id
  * @property Carbon $fecha_solicitud
  * @property string $estado
  * 
  * @property TblProyecto $tbl_proyecto
- * @property TblSolicitudMaterial $tbl_solicitud_material
+ * @property TblSoliMat $tbl_soli_mat
+ * @property Collection|TblCompraDetalle[] $tbl_compra_detalles
  * @property Collection|TblCotizacion[] $tbl_cotizacions
- * @property Collection|TblSolicitudCompraDetalle[] $tbl_solicitud_compra_detalles
  *
  * @package App\Models
  */
-class TblSolicitudCompra extends Model
+class TblCompra extends Model
 {
     use HasFactory;
-	protected $table = 'tbl_solicitud_compra';
+	protected $table = 'tbl_compra';
 	public $timestamps = false;
 
 	protected $casts = [
-		'solicitud_material_id' => 'int',
+		'soli_mat_id' => 'int',
 		'proyecto_id' => 'int',
 		'fecha_solicitud' => 'datetime'
 	];
 
 	protected $fillable = [
 		'codigo',
-		'solicitud_material_id',
+		'soli_mat_id',
 		'proyecto_id',
 		'fecha_solicitud',
 		'estado'
@@ -53,18 +53,18 @@ class TblSolicitudCompra extends Model
 		return $this->belongsTo(TblProyecto::class, 'proyecto_id');
 	}
 
-	public function tbl_solicitud_material()
+	public function tbl_soli_mat()
 	{
-		return $this->belongsTo(TblSolicitudMaterial::class, 'solicitud_material_id');
+		return $this->belongsTo(TblSoliMat::class, 'soli_mat_id');
+	}
+
+	public function tbl_compra_detalles()
+	{
+		return $this->hasMany(TblCompraDetalle::class, 'compra_id');
 	}
 
 	public function tbl_cotizacions()
 	{
-		return $this->hasMany(TblCotizacion::class, 'solicitud_compra_id');
-	}
-
-	public function tbl_solicitud_compra_detalles()
-	{
-		return $this->hasMany(TblSolicitudCompraDetalle::class, 'solicitud_compra_id');
+		return $this->hasMany(TblCotizacion::class, 'compra_id');
 	}
 }

@@ -30,7 +30,12 @@ class produccionTest extends TestCase
                 [
                     'material_id' => 1,
                     'unidad_medida' => 'rollo',
-                    'cantidad' => 150
+                    'cantidad' => 140
+                ],
+                [
+                    'material_id' => 2,
+                    'unidad_medida' => 'rollo',
+                    'cantidad' => 100
                 ]
             ]
         ];
@@ -71,3 +76,6 @@ class produccionTest extends TestCase
     }
 }
 // php artisan test --filter=produccionTest::test_registrarSolicitudMterial
+
+
+

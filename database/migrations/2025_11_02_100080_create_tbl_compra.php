@@ -11,17 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tbl_solicitud_despacho', function (Blueprint $table) {
+        Schema::create('tbl_compra', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('solicitud_material_id')->constrained('tbl_solicitud_material')->onDelete('cascade');
+            $table->string('codigo', 20)->unique()->nullable();
+            $table->foreignId('soli_mat_id')->constrained('tbl_soli_mat')->onDelete('cascade');
             $table->foreignId('proyecto_id')->constrained('tbl_proyecto')->onDelete('cascade');
             $table->date('fecha_solicitud');
             $table->string('estado', 50);
         });
 
-        Schema::create('tbl_solicitud_despacho_detalle', function (Blueprint $table) {
+        Schema::create('tbl_compra_detalle', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('solicitud_despacho_id')->constrained('tbl_solicitud_despacho')->onDelete('cascade');
+            $table->foreignId('compra_id')->constrained('tbl_compra')->onDelete('cascade');
             $table->foreignId('material_id')->constrained('tbl_material')->onDelete('cascade');
             $table->decimal('cantidad', 12, 2);
         });
@@ -32,7 +33,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tbl_solicitud_despacho_detalle');
-        Schema::dropIfExists('tbl_solicitud_despacho');
+        Schema::dropIfExists('tbl_compra_detalle');
+        Schema::dropIfExists('tbl_compra');
     }
 };

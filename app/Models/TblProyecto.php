@@ -31,19 +31,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property TblEmpleado|null $tbl_empleado
  * @property Collection|TblAlmacenMaterial[] $tbl_almacen_materials
  * @property Collection|TblAsistencium[] $tbl_asistencia
+ * @property Collection|TblCompra[] $tbl_compras
+ * @property Collection|TblDespacho[] $tbl_despachos
  * @property Collection|TblEquipoOperativo[] $tbl_equipo_operativos
  * @property Collection|TblFactura[] $tbl_facturas
  * @property Collection|TblInventarioMovimiento[] $tbl_inventario_movimientos
  * @property Collection|TblProyectoAvance[] $tbl_proyecto_avances
  * @property Collection|TblProyectoIncidencium[] $tbl_proyecto_incidencia
  * @property Collection|TblProyectoMaterial[] $tbl_proyecto_materials
- * @property Collection|TblSMPendiente[] $tbl_s_m_pendientes
- * @property Collection|TblSolicitudCompra[] $tbl_solicitud_compras
- * @property Collection|TblSolicitudDespacho[] $tbl_solicitud_despachos
- * @property Collection|TblSolicitudMaterial[] $tbl_solicitud_materials
+ * @property Collection|TblSoliMat[] $tbl_soli_mats
+ * @property Collection|TblSoliMatPend[] $tbl_soli_mat_pends
  * @property Collection|TblTareaProyecto[] $tbl_tarea_proyectos
  * @property Collection|TblTransaccionContable[] $tbl_transaccion_contables
- * @property Collection|TblTraslado[] $tbl_traslados
  *
  * @package App\Models
  */
@@ -101,6 +100,16 @@ class TblProyecto extends Model
 		return $this->hasMany(TblAsistencium::class, 'proyecto_id');
 	}
 
+	public function tbl_compras()
+	{
+		return $this->hasMany(TblCompra::class, 'proyecto_id');
+	}
+
+	public function tbl_despachos()
+	{
+		return $this->hasMany(TblDespacho::class, 'proyecto_id');
+	}
+
 	public function tbl_equipo_operativos()
 	{
 		return $this->hasMany(TblEquipoOperativo::class, 'proyecto_id');
@@ -131,24 +140,14 @@ class TblProyecto extends Model
 		return $this->hasMany(TblProyectoMaterial::class, 'proyecto_id');
 	}
 
-	public function tbl_s_m_pendientes()
+	public function tbl_soli_mats()
 	{
-		return $this->hasMany(TblSMPendiente::class, 'proyecto_id');
+		return $this->hasMany(TblSoliMat::class, 'proyecto_id');
 	}
 
-	public function tbl_solicitud_compras()
+	public function tbl_soli_mat_pends()
 	{
-		return $this->hasMany(TblSolicitudCompra::class, 'proyecto_id');
-	}
-
-	public function tbl_solicitud_despachos()
-	{
-		return $this->hasMany(TblSolicitudDespacho::class, 'proyecto_id');
-	}
-
-	public function tbl_solicitud_materials()
-	{
-		return $this->hasMany(TblSolicitudMaterial::class, 'proyecto_id');
+		return $this->hasMany(TblSoliMatPend::class, 'proyecto_id');
 	}
 
 	public function tbl_tarea_proyectos()
@@ -159,10 +158,5 @@ class TblProyecto extends Model
 	public function tbl_transaccion_contables()
 	{
 		return $this->hasMany(TblTransaccionContable::class, 'proyecto_id');
-	}
-
-	public function tbl_traslados()
-	{
-		return $this->hasMany(TblTraslado::class, 'proyecto_id');
 	}
 }

@@ -15,8 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('codigo', 20)->unique()->nullable();
             $table->string('nombre', 100);
+            $table->string('tipo_almacen', 50)->nullable();
             $table->string('ubicacion', 150)->nullable();
-            $table->string('estado', 50);
+            $table->decimal('stock_minimo', 12, 2)->nullable();
+            $table->decimal('stock_maximo', 12, 2)->nullable();
+            $table->boolean('alerta_stock')->nullable();
+            $table->string('estado', 50)->nullable();
         });
     }
 

@@ -56,6 +56,7 @@ class OrdenCompraController extends Controller
 
         try {
             $cotizacion = TblCotizacion::findOrFail($id);
+
             $orden = TblOrdenCompra::create([
                 'codigo' => 'OC-' . str_pad(TblOrdenCompra::max('id') + 1, 5, '0', STR_PAD_LEFT),
                 'cotizacion_id' => $cotizacion->id,
@@ -64,9 +65,7 @@ class OrdenCompraController extends Controller
                 'estado' => 'Por aprobar',
             ]);
 
-            $proyectoId = optional($orden->tbl_cotizacion)
-                ->tbl_solicitud_compra
-                ->proyecto_id ?? null;
+            $proyectoId = optional($orden->tbl_cotizacion->tbl_compra)->proyecto_id;
 
             if ($proyectoId) {
                 TblTransaccionContable::create([
@@ -86,12 +85,13 @@ class OrdenCompraController extends Controller
             $cotizacion->save();
 
             DB::commit();
+
             return new ApiResponseResource(
                 new MessageDTO(
                     true,
                     "Orden de compra registrada correctamente y cotización marcada como ejecutada",
                     201,
-                    $orden
+                    null
                 )
             );
         } catch (\Exception $e) {
@@ -107,6 +107,7 @@ class OrdenCompraController extends Controller
             );
         }
     }
+
 
     public function show($id)
     {

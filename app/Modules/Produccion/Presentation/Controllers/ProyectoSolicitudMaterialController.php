@@ -5,223 +5,240 @@ namespace Modules\Produccion\Presentation\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Routing\Controller;
-use App\Models\TblAlmacenMaterial; // inventario
-use App\Models\TblInventarioMovimiento; // inventario
-use App\Models\TblInventarioMovimientoDetalle;  // inventario
-use App\Models\TblProyecto; // Proyecto
-use App\Models\TblSMPendiente;
-use App\Models\TblSMPendienteDetalle;
-use App\Models\TblSolicitudCompra; // compra
-use App\Models\TblSolicitudCompraDetalle; // compra
-use App\Models\TblSolicitudDespacho; // logistica
-use App\Models\TblSolicitudDespachoDetalle; // logistica
-use App\Models\TblSolicitudMaterial; // produccion
-use App\Models\TblSolicitudMaterialDetalle; // produccion
+use App\Models\TblAlmacenMaterial;
+use App\Models\TblCompra;
+use App\Models\TblCompraDetalle;
+use App\Models\TblDespacho;
+use App\Models\TblDespachoDetalle;
+use App\Models\TblProyecto;
+use App\Models\TblSoliMat;
+use App\Models\TblSoliMatDet;
+use App\Models\TblSoliMatPend;
+use App\Models\TblSoliMatPendDet;
 use Modules\Shared\Application\DTOs\MessageDTO;
 use Modules\Shared\Presentation\Resources\ApiResponseResource;
 
+
 class ProyectoSolicitudMaterialController extends Controller
 {
+
     public function index()
     {
-        try {
-            $solicitudes = TblSolicitudMaterial::with([
-                'tbl_proyecto',
-                'tbl_solicitud_material_detalles.tbl_material'
-            ])
-                ->orderBy('fecha_solicitud', 'desc')
-                ->get();
+        $solicitudes = TblSoliMat::with(['tbl_proyecto'])
+            ->orderBy('id', 'desc')
+            ->get();
 
-            $dto = new MessageDTO(
-                true,
-                $solicitudes->isEmpty()
-                    ? "No se encontraron solicitudes de material"
-                    : "Listado obtenido correctamente",
-                200,
-                $solicitudes
-            );
-
-            return new ApiResponseResource($dto);
-        } catch (\Exception $e) {
+        if ($solicitudes->isEmpty()) {
             return new ApiResponseResource(
-                new MessageDTO(false, $e->getMessage(), 500, null)
+                new MessageDTO(false, "No existen solicitudes registradas", 404, [])
             );
         }
+
+        return new ApiResponseResource(
+            new MessageDTO(true, "Listado de solicitudes obtenido correctamente", 200, $solicitudes)
+        );
     }
+
+
+    public function show($id)
+    {
+        $solicitud = TblSoliMat::with([
+            'tbl_proyecto',
+            'tbl_soli_mat_dets.tbl_material'
+        ])
+            ->find($id);
+
+        if ($solicitud->tbl_soli_mat_dets->isEmpty()) {
+            return new ApiResponseResource(
+                new MessageDTO(false, "Sin detalles", 204, $solicitud)
+            );
+        }
+
+        return new ApiResponseResource(
+            new MessageDTO(true, "Solicitud obtenida correctamente", 200, $solicitud)
+        );
+    }
+
 
     public function store(Request $request)
     {
         DB::beginTransaction();
-
         try {
-            // 1. Validar y obtener el proyecto destino de la solicitud
             $proyecto = TblProyecto::findOrFail($request->proyecto_id);
-            // 2. Registrar la solicitud principal (encabezado)
-            $solicitud = TblSolicitudMaterial::create([
-                'codigo' => 'SOLM-' . str_pad(TblSolicitudMaterial::max('id') + 1, 5, '0', STR_PAD_LEFT),
+            $solicitud = TblSoliMat::create([
+                'codigo' => 'SOLM-' . str_pad(TblSoliMat::max('id') + 1, 5, '0', STR_PAD_LEFT),
                 'proyecto_id' => $proyecto->id,
                 'fecha_solicitud' => now(),
                 'estado' => 'Pendiente',
             ]);
-            // 3. Registrar el detalle solicitado (por cada material)
             foreach ($request->materiales as $m) {
-                TblSolicitudMaterialDetalle::create([
-                    'solicitud_material_id' => $solicitud->id,
+                TblSoliMatDet::create([
+                    'soli_mat_id' => $solicitud->id,
                     'material_id' => $m['material_id'],
-                    'cantidad' => $m['cantidad']
+                    'cantidad' => $m['cantidad'],
+                    'estado' => 'Pendiente'
                 ]);
             }
-            // 4. Preparar arreglos para determinar qué se despacha y qué se compra
-            $detalleDespacho = [];
-            $detalleCompra = [];
-            // 5. Evaluar stock por cada material y dividir: lo disponible (despacho) y lo faltante (compra)
+
+            $despacho = [];
+            $traslado = [];
+            $compra = [];
+            $estadoMaterial = [];
+
             foreach ($request->materiales as $m) {
-                $almacenMaterial = TblAlmacenMaterial::where('almacen_id', $proyecto->almacen_id)
-                    ->where('proyecto_id', $proyecto->id)
-                    ->where('material_id', $m['material_id'])
-                    ->first();
 
+                $materialId = $m['material_id'];
                 $cantidadSolicitada = $m['cantidad'];
-                // 5.1 Si el material existe en almacén y tiene stock → se genera despacho parcial o total
-                if ($almacenMaterial && $almacenMaterial->stock > 0) {
-                    $cantidadDespacho = min($cantidadSolicitada, $almacenMaterial->stock);
-                    // Registrar cantidad a despachar
-                    $detalleDespacho[] = [
-                        'material_id' => $m['material_id'],
-                        'cantidad' => $cantidadDespacho
+                $cantidadPendiente = $cantidadSolicitada;
+
+                $estadoActual = [];
+                $stockProyecto = TblAlmacenMaterial::where('almacen_id', $proyecto->almacen_id)->where('proyecto_id', $proyecto->id)->where('material_id', $materialId)->value('stock') ?? 0;
+                $stockCentral = TblAlmacenMaterial::where('almacen_id', 1)->where('material_id', $materialId)->value('stock') ?? 0;
+                if ($stockProyecto > 0) {
+                    $cantidadDespacho = min($cantidadPendiente, $stockProyecto);
+
+                    if ($cantidadDespacho > 0) {
+                        $despacho[] = [
+                            'material_id' => $materialId,
+                            'cantidad' => $cantidadDespacho
+                        ];
+
+                        $estadoActual[] = "recoger";
+                        $cantidadPendiente -= $cantidadDespacho;
+                    }
+                }
+                if ($cantidadPendiente > 0 && $stockCentral > 0) {
+                    $cantidadTraslado = min($cantidadPendiente, $stockCentral);
+
+                    $traslado[] = [
+                        'material_id' => $materialId,
+                        'cantidad' => $cantidadTraslado
                     ];
-                    // Actualizar stock del almacén
-                    $almacenMaterial->stock -= $cantidadDespacho;
-                    $almacenMaterial->save();
-                    // Registrar movimiento de inventario (Salida)
-                    $movimiento = TblInventarioMovimiento::create([
-                        'almacen_origen_id' => $proyecto->almacen_id,
-                        'almacen_destino_id' => null,
-                        'proyecto_id' => $proyecto->id,
-                        'tipo' => 'Salida',
-                        'referencia' => $solicitud->codigo,
-                        'origen_movimiento' => 'Produccion',
-                        'fecha_movimiento' => now(),
-                    ]);
-                    // Registrar detalle del movimiento
-                    TblInventarioMovimientoDetalle::create([
-                        'inventario_movimiento_id' => $movimiento->id,
-                        'material_id' => $m['material_id'],
-                        'cantidad' => $cantidadDespacho
-                    ]);
-                    // Restar lo ya despachado del total solicitado
-                    $cantidadSolicitada -= $cantidadDespacho;
+
+                    $estadoActual[] = "trasladar";
+                    $cantidadPendiente -= $cantidadTraslado;
                 }
-                // 5.2 Si queda cantidad pendiente → se agrega a la lista de compra
-                if ($cantidadSolicitada > 0) {
-                    $detalleCompra[] = [
-                        'material_id' => $m['material_id'],
-                        'cantidad' => $cantidadSolicitada
+                if ($cantidadPendiente > 0) {
+                    $compra[] = [
+                        'material_id' => $materialId,
+                        'cantidad' => $cantidadPendiente
                     ];
+
+                    $estadoActual[] = "comprar";
                 }
-            }
-            // 6. Registrar solicitud de despacho (lo que sí se puede entregar desde almacén)
-            $despacho = null;
-            if (!empty($detalleDespacho)) {
-                $despacho = TblSolicitudDespacho::create([
-                    'solicitud_material_id' => $solicitud->id,
-                    'proyecto_id' => $proyecto->id,
-                    'fecha_solicitud' => now(),
-                    'estado' => 'Pendiente',
-                ]);
 
-                foreach ($detalleDespacho as $d) {
-                    TblSolicitudDespachoDetalle::create(array_merge($d, [
-                        'solicitud_despacho_id' => $despacho->id
-                    ]));
-                }
-            }
-            // 7a. Registrar respaldo de materiales pendientes
-            if (!empty($detalleCompra)) {
-                $respaldo = TblSMPendiente::create([
-                    'solicitud_material_id' => $solicitud->id,
-                    'proyecto_id' => $proyecto->id,
-                    'fecha' => now(),
-                    'estado' => 'Pendiente',
-                ]);
-
-                foreach ($detalleCompra as $c) {
-                    TblSMPendienteDetalle::create([
-                        's_m_pendiente_id' => $respaldo->id,
-                        'material_id' => $c['material_id'],
-                        'cantidad' => $c['cantidad']
-                    ]);
-                }
+                $estadoMaterial[$materialId] = match (implode("-", $estadoActual)) {
+                    "recoger" => "por recoger",
+                    "trasladar" => "por trasladar",
+                    "comprar" => "por comprar",
+                    "recoger-trasladar" => "recoger/trasladar",
+                    "recoger-comprar" => "recoger/comprar",
+                    "trasladar-comprar" => "trasladar/comprar",
+                    "recoger-trasladar-comprar" => "mixto",
+                    default => "pendiente"
+                };
             }
 
-            // 7b. Registrar solicitud de compra (lo que falta en almacén)
-            $compra = null;
-            if (!empty($detalleCompra)) {
-                $compra = TblSolicitudCompra::create([
-                    'codigo' => 'SOLCPR-' . str_pad(TblSolicitudCompra::max('id') + 1, 5, '0', STR_PAD_LEFT),
-                    'solicitud_material_id' => $solicitud->id,
-                    'proyecto_id' => $proyecto->id,
-                    'fecha_solicitud' => now(),
-                    'estado' => 'Pendiente',
-                ]);
-
-                foreach ($detalleCompra as $c) {
-                    TblSolicitudCompraDetalle::create(array_merge($c, [
-                        'solicitud_compra_id' => $compra->id
-                    ]));
-                }
+            foreach ($estadoMaterial as $materialId => $estadoFinal) {
+                TblSoliMatDet::where('soli_mat_id', $solicitud->id)
+                    ->where('material_id', $materialId)
+                    ->update(['estado' => $estadoFinal]);
             }
 
-            // 8. Determinar estado final de la solicitud (completa, parcial o pendiente)
-            if (!empty($detalleCompra) && !empty($detalleDespacho)) {
-                $solicitud->estado = 'Incompleta';
-            } elseif (!empty($detalleCompra) && empty($detalleDespacho)) {
-                $solicitud->estado = 'Pendiente';
-            } elseif (empty($detalleCompra) && !empty($detalleDespacho)) {
-                $solicitud->estado = 'Completa';
-            } else {
-                $solicitud->estado = 'Pendiente';
-            }
-            $solicitud->save();
-
-            DB::commit();
-
-            $dto = new MessageDTO(true, "Solicitud de materiales registrada correctamente", 201, null);
-            return new ApiResponseResource($dto);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            $dto = new MessageDTO(false, $e->getMessage(), 500, null);
-            return new ApiResponseResource($dto);
-        }
-    }
-
-    public function show($id)
-    {
-        try {
-            $solicitud = TblSolicitudMaterial::with([
-                'tbl_proyecto',
-                'tbl_solicitud_material_detalles.tbl_material'
-            ])
-                ->find($id);
-
-            if (!$solicitud) {
-                return new ApiResponseResource(
-                    new MessageDTO(false, "Solicitud no encontrada", 404, null)
-                );
-            }
-
-            $dto = new MessageDTO(
-                true,
-                "Solicitud obtenida correctamente",
-                200,
-                $solicitud
+            $todosCompletados = collect($estadoMaterial)->every(
+                fn($estado) => $estado === "por recoger"
             );
 
-            return new ApiResponseResource($dto);
+            $estadoSolicitud = $todosCompletados ? "Completado" : "Incompleto";
+            $solicitud->update(['estado' => $estadoSolicitud]);
+
+            if (!empty($despacho)) {
+                $this->registrarDespacho($despacho, $solicitud->id, $proyecto->id);
+            }
+            if (!empty($traslado)) {
+                $this->registrarTrasladoPendiente($traslado, $solicitud->id, $proyecto->id);
+            }
+            if (!empty($compra)) {
+                $this->registrarCompraPendiente($compra, $solicitud->id, $proyecto->id);
+            }
+
+            DB::commit();
+            return new ApiResponseResource(
+                new MessageDTO(true, "Clasificación realizada correctamente", 200, null)
+            );
         } catch (\Exception $e) {
+            DB::rollBack();
             return new ApiResponseResource(
                 new MessageDTO(false, $e->getMessage(), 500, null)
             );
+        }
+    }
+
+
+    //  FUNCIONES AUXILIARES
+
+    private function registrarDespacho(array $items, int $solicitudId, int $proyectoId)
+    {
+        $cabecera = TblDespacho::create([
+            'soli_mat_id' => $solicitudId,
+            'proyecto_id' => $proyectoId,
+            'fecha'       => now(),
+            'estado'      => 'pendiente',
+        ]);
+        foreach ($items as $item) {
+            TblDespachoDetalle::create([
+                'despacho_id' => $cabecera->id,
+                'material_id' => $item['material_id'],
+                'cantidad'    => $item['cantidad'],
+            ]);
+        }
+    }
+    private function registrarTrasladoPendiente(array $items, int $solicitudId, int $proyectoId)
+    {
+        $cab = TblSoliMatPend::create([
+            'soli_mat_id' => $solicitudId,
+            'proyecto_id' => $proyectoId,
+            'tipo' => 'traslado',
+            'estado' => 'pendiente',
+            'fecha' => now(),
+        ]);
+        foreach ($items as $item) {
+            TblSoliMatPendDet::create([
+                'soli_mat_pend_id' => $cab->id,
+                'material_id'      => $item['material_id'],
+                'cantidad'         => $item['cantidad'],
+            ]);
+        }
+    }
+    private function registrarCompraPendiente(array $items, int $solicitudId, int $proyectoId)
+    {
+        $compra = TblCompra::create([
+            'codigo' => 'COMP-' . str_pad(TblCompra::max('id') + 1, 5, '0', STR_PAD_LEFT),
+            'soli_mat_id'   => $solicitudId,
+            'proyecto_id'   => $proyectoId,
+            'fecha_solicitud' => now(),
+            'estado'        => 'Pendiente',
+        ]);
+        foreach ($items as $item) {
+            TblCompraDetalle::create([
+                'compra_id'   => $compra->id,
+                'material_id' => $item['material_id'],
+                'cantidad'    => $item['cantidad'],
+            ]);
+        }
+        $cab = TblSoliMatPend::create([
+            'soli_mat_id' => $solicitudId,
+            'proyecto_id' => $proyectoId,
+            'tipo' => 'compra',
+            'estado' => 'pendiente',
+            'fecha' => now(),
+        ]);
+        foreach ($items as $item) {
+            TblSoliMatPendDet::create([
+                'soli_mat_pend_id' => $cab->id,
+                'material_id'      => $item['material_id'],
+                'cantidad'         => $item['cantidad'],
+            ]);
         }
     }
 }

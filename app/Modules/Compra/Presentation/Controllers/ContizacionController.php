@@ -16,8 +16,7 @@ class ContizacionController extends Controller
     {
         try {
             $cotizaciones = TblCotizacion::with([
-                'tbl_solicitud_compra',
-                'tbl_cotizacion_detalles.tbl_material',
+                'tbl_compra',
                 'tbl_proveedor',
             ])
                 ->orderBy('fecha_cotizacion', 'desc')
@@ -55,8 +54,8 @@ class ContizacionController extends Controller
 
         try {
             $cotizacion = TblCotizacion::create([
-                'codigo' => 'COT-' . str_pad(TblCotizacion::max('id') + 1, 5, '0', STR_PAD_LEFT),
-                'solicitud_compra_id' => $request->solicitud_compra_id,
+                'codigo'              => 'COT-' . str_pad(TblCotizacion::max('id') + 1, 5, '0', STR_PAD_LEFT),
+                'compra_id'           => $request->compra_id,
                 'proveedor_id'        => $request->proveedor_id,
                 'fecha_cotizacion'    => $request->fecha_cotizacion,
                 'tiempo_entrega_dias' => $request->tiempo_entrega_dias,
@@ -100,9 +99,9 @@ class ContizacionController extends Controller
     {
         try {
             $cotizacion = TblCotizacion::with([
-                'tbl_solicitud_compra',
-                'tbl_cotizacion_detalles.tbl_material',
+                'tbl_compra',
                 'tbl_proveedor',
+                'tbl_cotizacion_detalles.tbl_material',
             ])->findOrFail($id);
 
             return new ApiResponseResource(
@@ -129,11 +128,10 @@ class ContizacionController extends Controller
     {
         try {
             $cotizaciones = TblCotizacion::with([
-                'tbl_solicitud_compra',
-                'tbl_cotizacion_detalles.tbl_material',
+               'tbl_compra',
                 'tbl_proveedor',
             ])
-                ->where('solicitud_compra_id', $solicitudCompraId)
+                ->where('compra_id', $solicitudCompraId)
                 ->orderBy('fecha_cotizacion', 'desc')
                 ->get();
 

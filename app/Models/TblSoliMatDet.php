@@ -10,34 +10,36 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
- * Class TblSolicitudMaterialDetalle
+ * Class TblSoliMatDet
  * 
  * @property int $id
- * @property int $solicitud_material_id
+ * @property int $soli_mat_id
  * @property int $material_id
- * @property float $cantidad
+ * @property float|null $cantidad
+ * @property string|null $estado
  * 
  * @property TblMaterial $tbl_material
- * @property TblSolicitudMaterial $tbl_solicitud_material
+ * @property TblSoliMat $tbl_soli_mat
  *
  * @package App\Models
  */
-class TblSolicitudMaterialDetalle extends Model
+class TblSoliMatDet extends Model
 {
     use HasFactory;
-	protected $table = 'tbl_solicitud_material_detalle';
+	protected $table = 'tbl_soli_mat_det';
 	public $timestamps = false;
 
 	protected $casts = [
-		'solicitud_material_id' => 'int',
+		'soli_mat_id' => 'int',
 		'material_id' => 'int',
 		'cantidad' => 'float'
 	];
 
 	protected $fillable = [
-		'solicitud_material_id',
+		'soli_mat_id',
 		'material_id',
-		'cantidad'
+		'cantidad',
+		'estado'
 	];
 
 	public function tbl_material()
@@ -45,8 +47,8 @@ class TblSolicitudMaterialDetalle extends Model
 		return $this->belongsTo(TblMaterial::class, 'material_id');
 	}
 
-	public function tbl_solicitud_material()
+	public function tbl_soli_mat()
 	{
-		return $this->belongsTo(TblSolicitudMaterial::class, 'solicitud_material_id');
+		return $this->belongsTo(TblSoliMat::class, 'soli_mat_id');
 	}
 }

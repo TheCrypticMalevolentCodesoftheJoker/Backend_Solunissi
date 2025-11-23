@@ -16,14 +16,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property int $id
  * @property string|null $codigo
  * @property string $nombre
+ * @property string|null $tipo_almacen
  * @property string|null $ubicacion
- * @property string $estado
+ * @property float|null $stock_minimo
+ * @property float|null $stock_maximo
+ * @property bool|null $alerta_stock
+ * @property string|null $estado
  * 
  * @property Collection|TblAlmacenMaterial[] $tbl_almacen_materials
  * @property Collection|TblIncidenciaInventario[] $tbl_incidencia_inventarios
  * @property Collection|TblInventarioMovimiento[] $tbl_inventario_movimientos
  * @property Collection|TblProyecto[] $tbl_proyectos
- * @property Collection|TblTraslado[] $tbl_traslados
  *
  * @package App\Models
  */
@@ -33,10 +36,20 @@ class TblAlmacen extends Model
 	protected $table = 'tbl_almacen';
 	public $timestamps = false;
 
+	protected $casts = [
+		'stock_minimo' => 'float',
+		'stock_maximo' => 'float',
+		'alerta_stock' => 'bool'
+	];
+
 	protected $fillable = [
 		'codigo',
 		'nombre',
+		'tipo_almacen',
 		'ubicacion',
+		'stock_minimo',
+		'stock_maximo',
+		'alerta_stock',
 		'estado'
 	];
 
@@ -58,10 +71,5 @@ class TblAlmacen extends Model
 	public function tbl_proyectos()
 	{
 		return $this->hasMany(TblProyecto::class, 'almacen_id');
-	}
-
-	public function tbl_traslados()
-	{
-		return $this->hasMany(TblTraslado::class, 'almacen_origen_id');
 	}
 }

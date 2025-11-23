@@ -28,7 +28,7 @@ class comprasTest extends TestCase
     public function test_registrarCotizacion()
     {
         $data = [
-            'solicitud_compra_id' => 1,
+            'compra_id' => 1,
             'proveedor_id' => 1,
             'fecha_cotizacion' => '2025-11-12',
             'tiempo_entrega_dias' => 7,

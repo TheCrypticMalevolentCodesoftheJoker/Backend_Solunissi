@@ -40,20 +40,16 @@ class ProyectoMaterialController extends Controller
             $registrados = [];
 
             foreach ($request->materiales as $m) {
-
-                // Buscar si ya existe el material asignado al proyecto
                 $existente = TblProyectoMaterial::where('proyecto_id', $request->proyecto_id)
                     ->where('material_id', $m['material_id'])
                     ->first();
 
                 if ($existente) {
-                    // Si existe, solo actualizar cantidad
                     $existente->cantidad += $m['cantidad'];
                     $existente->save();
 
                     $registrados[] = $existente;
                 } else {
-                    // Si no existe, crear un nuevo registro
                     $registrados[] = TblProyectoMaterial::create([
                         'proyecto_id'      => $request->proyecto_id,
                         'material_id'      => $m['material_id'],
@@ -79,8 +75,7 @@ class ProyectoMaterialController extends Controller
     public function show($id)
     {
         try {
-            $material = TblProyectoMaterial::with(['tbl_proyecto', 'tbl_material'])
-                ->find($id);
+            $material = TblProyectoMaterial::with(['tbl_proyecto', 'tbl_material'])->find($id);
 
             if (!$material) {
                 return new ApiResponseResource(

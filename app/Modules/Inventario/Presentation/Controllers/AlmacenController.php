@@ -34,10 +34,14 @@ class AlmacenController extends Controller
         DB::beginTransaction();
 
         try {
-            $almacen = TblAlmacen::create([
+            TblAlmacen::create([
                 'codigo' => 'ALM-' . str_pad(TblAlmacen::max('id') + 1, 5, '0', STR_PAD_LEFT),
-                'nombre'    => $request->nombre,
-                'ubicacion' => $request->ubicacion,
+                'nombre'       => $request->nombre,
+                'tipo_almacen' => $request->tipo_almacen,
+                'ubicacion'    => $request->ubicacion,
+                'stock_minimo' => $request->stock_minimo,
+                'stock_maximo' => $request->stock_maximo,
+                'alerta_stock' => true,
                 'estado'    => 'Activo',
             ]);
 

@@ -142,18 +142,10 @@ class ProyectoAvanceController extends Controller
             $proyecto = TblProyecto::find($proyectoId);
 
             if (!$proyecto) {
-                $dto = new MessageDTO(
-                    false,
-                    "El proyecto solicitado no existe",
-                    404,
-                    null
-                );
+                $dto = new MessageDTO(false,"El proyecto solicitado no existe",404,null);
                 return new ApiResponseResource($dto);
             }
-            $avances = TblProyectoAvance::with(['tbl_proyecto'])
-                ->where('proyecto_id', $proyectoId)
-                ->orderBy('fecha_registro', 'desc')
-                ->get();
+            $avances = TblProyectoAvance::with(['tbl_proyecto'])->where('proyecto_id', $proyectoId)->orderBy('fecha_registro', 'desc')->get();
 
             if ($avances->isEmpty()) {
                 $dto = new MessageDTO(

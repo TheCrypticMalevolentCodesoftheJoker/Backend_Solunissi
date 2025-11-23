@@ -39,7 +39,7 @@ class MaterialController extends Controller
         DB::beginTransaction();
 
         try {
-            $material = TblMaterial::create([
+            TblMaterial::create([
                 'codigo' => 'MAT-' . str_pad(TblMaterial::max('id') + 1, 5, '0', STR_PAD_LEFT),
                 'nombre'        => $request->nombre,
                 'unidad_medida' => $request->unidad_medida,
@@ -48,7 +48,7 @@ class MaterialController extends Controller
             DB::commit();
 
             return new ApiResponseResource(
-                new MessageDTO(true, 'Material registrado correctamente', 201, $material)
+                new MessageDTO(true, 'Material registrado correctamente', 201, null)
             );
         } catch (\Exception $e) {
 

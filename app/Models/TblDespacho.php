@@ -12,34 +12,34 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
- * Class TblSMPendiente
+ * Class TblDespacho
  * 
  * @property int $id
- * @property int $solicitud_material_id
+ * @property int $soli_mat_id
  * @property int $proyecto_id
  * @property Carbon $fecha
  * @property string $estado
  * 
  * @property TblProyecto $tbl_proyecto
- * @property TblSolicitudMaterial $tbl_solicitud_material
- * @property Collection|TblSMPendienteDetalle[] $tbl_s_m_pendiente_detalles
+ * @property TblSoliMat $tbl_soli_mat
+ * @property Collection|TblDespachoDetalle[] $tbl_despacho_detalles
  *
  * @package App\Models
  */
-class TblSMPendiente extends Model
+class TblDespacho extends Model
 {
     use HasFactory;
-	protected $table = 'tbl_s_m_pendiente';
+	protected $table = 'tbl_despacho';
 	public $timestamps = false;
 
 	protected $casts = [
-		'solicitud_material_id' => 'int',
+		'soli_mat_id' => 'int',
 		'proyecto_id' => 'int',
 		'fecha' => 'datetime'
 	];
 
 	protected $fillable = [
-		'solicitud_material_id',
+		'soli_mat_id',
 		'proyecto_id',
 		'fecha',
 		'estado'
@@ -50,13 +50,13 @@ class TblSMPendiente extends Model
 		return $this->belongsTo(TblProyecto::class, 'proyecto_id');
 	}
 
-	public function tbl_solicitud_material()
+	public function tbl_soli_mat()
 	{
-		return $this->belongsTo(TblSolicitudMaterial::class, 'solicitud_material_id');
+		return $this->belongsTo(TblSoliMat::class, 'soli_mat_id');
 	}
 
-	public function tbl_s_m_pendiente_detalles()
+	public function tbl_despacho_detalles()
 	{
-		return $this->hasMany(TblSMPendienteDetalle::class, 's_m_pendiente_id');
+		return $this->hasMany(TblDespachoDetalle::class, 'despacho_id');
 	}
 }

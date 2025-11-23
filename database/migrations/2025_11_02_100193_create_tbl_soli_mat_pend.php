@@ -11,17 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tbl_s_m_pendiente', function (Blueprint $table) {
+        Schema::create('tbl_soli_mat_pend', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('solicitud_material_id')->constrained('tbl_solicitud_material')->onDelete('cascade');
+            $table->foreignId('soli_mat_id')->constrained('tbl_soli_mat')->onDelete('cascade');
             $table->foreignId('proyecto_id')->constrained('tbl_proyecto')->onDelete('cascade');
+            $table->string('tipo', 50);
+            $table->string('estado', 50);
             $table->dateTime('fecha');
-            $table->string('estado', 50)->default('Pendiente');
         });
-
-        Schema::create('tbl_s_m_pendiente_detalle', function (Blueprint $table) {
+        Schema::create('tbl_soli_mat_pend_det', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('s_m_pendiente_id')->constrained('tbl_s_m_pendiente')->onDelete('cascade');
+            $table->foreignId('soli_mat_pend_id')->constrained('tbl_soli_mat_pend')->onDelete('cascade');
             $table->foreignId('material_id')->constrained('tbl_material')->onDelete('cascade');
             $table->decimal('cantidad', 10, 2);
         });
@@ -32,7 +32,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tbl_s_m_pendiente_detalle');
-        Schema::dropIfExists('tbl_s_m_pendiente');
+        Schema::dropIfExists('tbl_soli_mat_pend_det');
+        Schema::dropIfExists('tbl_soli_mat_pend');
     }
 };
